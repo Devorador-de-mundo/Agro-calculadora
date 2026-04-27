@@ -529,71 +529,97 @@ function calcularMEQ() {
     let seleccionados = [];
     document.querySelectorAll('.fert-meq:checked').forEach(cb => seleccionados.push(cb.value));
 
+    console.log("Volumen:", vol);
+    console.log("Requerimientos:", {ca, k, mg, nh4, no3, h2po4, so4});
+    console.log("Fertilizantes seleccionados:", seleccionados);
+
     let resultados = {};
     let caR = ca, kR = k, mgR = mg, nh4R = nh4, no3R = no3, h2po4R = h2po4, so4R = so4;
 
-    // Calcio
+    // CALCIO
     if (seleccionados.includes('Nitrato de Calcio') && caR > 0) {
-        resultados["Nitrato de Calcio"] = caR;
-        no3R -= caR;
+        let meq = caR;
+        resultados["Nitrato de Calcio"] = meq;
+        no3R -= meq;
         caR = 0;
+        console.log("Calcio asignado:", meq, "meq");
     }
 
     // MAP
     if (seleccionados.includes('Fosfato Monoamónico (MAP)')) {
         if (h2po4R > 0) {
-            resultados["MAP (por P)"] = h2po4R;
-            nh4R -= h2po4R;
+            let meq = h2po4R;
+            resultados["MAP (por P)"] = meq;
+            nh4R -= meq;
             h2po4R = 0;
+            console.log("MAP por P asignado:", meq, "meq");
         } else if (nh4R > 0) {
-            resultados["MAP (por NH4)"] = nh4R;
-            h2po4R -= nh4R;
+            let meq = nh4R;
+            resultados["MAP (por NH4)"] = meq;
+            h2po4R -= meq;
             nh4R = 0;
+            console.log("MAP por NH4 asignado:", meq, "meq");
         }
     }
 
-    // Potasio
+    // POTASIO
     if (kR > 0) {
         if (seleccionados.includes('Nitrato de Potasio')) {
-            resultados["Nitrato de Potasio"] = kR;
-            no3R -= kR;
+            let meq = kR;
+            resultados["Nitrato de Potasio"] = meq;
+            no3R -= meq;
             kR = 0;
+            console.log("Potasio (Nitrato) asignado:", meq, "meq");
         } else if (seleccionados.includes('Sulfato de Potasio')) {
-            resultados["Sulfato de Potasio"] = kR;
-            so4R -= kR;
+            let meq = kR;
+            resultados["Sulfato de Potasio"] = meq;
+            so4R -= meq;
             kR = 0;
+            console.log("Potasio (Sulfato) asignado:", meq, "meq");
         }
     }
 
-    // Magnesio
+    // MAGNESIO
     if (mgR > 0) {
         if (seleccionados.includes('Sulfato de Magnesio')) {
-            resultados["Sulfato de Magnesio"] = mgR;
-            so4R -= mgR;
+            let meq = mgR;
+            resultados["Sulfato de Magnesio"] = meq;
+            so4R -= meq;
             mgR = 0;
+            console.log("Magnesio (Sulfato) asignado:", meq, "meq");
         } else if (seleccionados.includes('Nitrato de Magnesio')) {
-            resultados["Nitrato de Magnesio"] = mgR;
-            no3R -= mgR;
+            let meq = mgR;
+            resultados["Nitrato de Magnesio"] = meq;
+            no3R -= meq;
             mgR = 0;
+            console.log("Magnesio (Nitrato) asignado:", meq, "meq");
         }
     }
 
-    // Nitrato restante
+    // NITRATO RESTANTE
     if (no3R > 0) {
+        console.log("Nitrato restante por cubrir:", no3R, "meq");
         if (seleccionados.includes('Nitrato de Potasio') && kR === 0 && !resultados["Nitrato de Potasio"]) {
             resultados["Nitrato de Potasio (adicional)"] = no3R;
+            console.log("Nitrato adicional con Nitrato de Potasio:", no3R, "meq");
         } else if (seleccionados.includes('Nitrato de Magnesio') && mgR === 0 && !resultados["Nitrato de Magnesio"]) {
             resultados["Nitrato de Magnesio (adicional)"] = no3R;
+            console.log("Nitrato adicional con Nitrato de Magnesio:", no3R, "meq");
         } else if (seleccionados.includes('Nitrato de Calcio') && caR === 0 && !resultados["Nitrato de Calcio"]) {
             resultados["Nitrato de Calcio (adicional)"] = no3R;
+            console.log("Nitrato adicional con Nitrato de Calcio:", no3R, "meq");
         } else if (seleccionados.includes('Ácido Nítrico')) {
-            let mL = (no3R * 63.01) / (1.41 * 0.70 * 1000);
-            resultados["Ácido Nítrico"] = (mL * vol).toFixed(1) + " mL";
+            let densidad = 1.41, riqueza = 0.70, pesoEq = 63.01;
+            let mL = (no3R * pesoEq) / (densidad * riqueza);
+            let mLtot = (mL / 1000) * vol;
+            resultados["Ácido Nítrico"] = mLtot.toFixed(1) + " mL";
+            console.log("Ácido Nítrico:", mLtot, "mL");
         }
     }
 
-    // Sulfato restante
+    // SULFATO RESTANTE
     if (so4R > 0) {
+        console.log("Sulfato restante por cubrir:", so4R, "meq");
         if (seleccionados.includes('Sulfato de Magnesio') && mgR === 0 && !resultados["Sulfato de Magnesio"]) {
             resultados["Sulfato de Magnesio (adicional)"] = so4R;
         } else if (seleccionados.includes('Sulfato de Potasio') && kR === 0 && !resultados["Sulfato de Potasio"]) {
@@ -601,9 +627,15 @@ function calcularMEQ() {
         }
     }
 
+    // PESOS EQUIVALENTES
     const pesos = {
-        "Nitrato de Calcio": 118.08, "Nitrato de Potasio": 101.10, "Sulfato de Magnesio": 123.24,
-        "MAP (por P)": 115.03, "MAP (por NH4)": 115.03, "Sulfato de Potasio": 87.13, "Nitrato de Magnesio": 128.21
+        "Nitrato de Calcio": 118.08,
+        "Nitrato de Potasio": 101.10,
+        "Sulfato de Magnesio": 123.24,
+        "MAP (por P)": 115.03,
+        "MAP (por NH4)": 115.03,
+        "Sulfato de Potasio": 87.13,
+        "Nitrato de Magnesio": 128.21
     };
 
     let output = "";
@@ -611,14 +643,21 @@ function calcularMEQ() {
         if (nombre.includes("Ácido")) {
             output += `${nombre}: ${meq}\n`;
         } else {
-            let g = (meq * pesos[nombre] / 1000) * vol;
-            output += `${nombre}: ${g.toFixed(2)} g\n`;
+            let peq = pesos[nombre];
+            if (peq) {
+                let gramos = (meq * peq / 1000) * vol;
+                output += `${nombre}: ${gramos.toFixed(2)} g (${meq} meq × ${peq} mg/meq ÷ 1000 × ${vol} L)\n`;
+                console.log(`Cálculo: ${nombre} → ${meq} meq × ${peq} / 1000 × ${vol} = ${gramos.toFixed(2)} g`);
+            } else {
+                output += `${nombre}: ${meq} meq (sin conversión)\n`;
+            }
         }
     }
 
+    console.log("Resultado final:\n", output);
     document.getElementById('textoResultadoMEQ').innerText = output || "No se pudo calcular";
     document.getElementById('resultadoMEQ').style.display = 'block';
-}  
+}
         // ==================== MICROELEMENTOS ====================
         document.getElementById('calc_micro').addEventListener('click', () => {
             const vol = parseFloat(document.getElementById('micro_vol').value) || 1000;
