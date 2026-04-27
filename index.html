@@ -482,49 +482,151 @@
             document.getElementById('textoResultadoCE').innerText = output;
             document.getElementById('resultadoCE').style.display = 'block';
         });
-        
-        // ----- 5. MEQ -----
-        document.getElementById('btnCalcularMEQ').addEventListener('click', function() {
-    let vol = parseFloat(document.getElementById('meq_vol').value) || 1000;
+         // ----- 3. Lógica de MEQ (para que no esté vacía) -----
+     document.getElementById('btnCalcularMEQ').addEventListener('click', function () {
 
-    let ca = parseFloat(document.getElementById('meq_ca').value) || 0;
-    let k = parseFloat(document.getElementById('meq_k').value) || 0;
-    let mg = parseFloat(document.getElementById('meq_mg').value) || 0;
-    let nh4 = parseFloat(document.getElementById('meq_nh4').value) || 0;
-    let no3 = parseFloat(document.getElementById('meq_no3').value) || 0;
-    let h2po4 = parseFloat(document.getElementById('meq_h2po4').value) || 0;
-    let so4 = parseFloat(document.getElementById('meq_so4').value) || 0;
+    const resultados = {};
+    const vol = parseFloat(document.getElementById('meq_vol').value) || 1000;
 
-    let cationes = ca + k + mg + nh4;
-    let aniones = no3 + h2po4 + so4;
-
-    let output = `Volumen: ${vol} L\n\n`;
-
-    output += `Cationes: ${cationes.toFixed(2)} meq/L\n`;
-    output += `Aniones: ${aniones.toFixed(2)} meq/L\n`;
-
-    let balance = cationes - aniones;
-
-    if (Math.abs(balance) > 0.2) {
-        output += `⚠️ Desbalance iónico: ${balance.toFixed(2)} meq/L\n`;
-    } else {
-        output += `✅ Solución balanceada\n`;
+    if (vol <= 0) {
+        document.getElementById('textoResultadoMEQ').innerText = "El volumen debe ser mayor a 0";
+        return;
     }
 
-    // Conversión ejemplo
-    let ca_mg = ca * 20;
-    let k_mg = k * 39;
-    let mg_mg = mg * 12.15;
+    // 1. Requerimientos
+    let caRestante = parseFloat(document.getElementById('meq_ca').value) || 0;
+    let kRestante = parseFloat(document.getElementById('meq_k').value) || 0;
+    let mgRestante = parseFloat(document.getElementById('meq_mg').value) || 0;
+    let nh4Restante = parseFloat(document.getElementById('meq_nh4').value) || 0;
+    let no3Restante = parseFloat(document.getElementById('meq_no3').value) || 0;
+    let h2po4Restante = parseFloat(document.getElementById('meq_h2po4').value) || 0;
+    let so4Restante = parseFloat(document.getElementById('meq_so4').value) || 0;
 
-    output += `\n--- Conversión a mg/L ---\n`;
-    output += `Ca: ${ca_mg.toFixed(1)} mg/L\n`;
-    output += `K: ${k_mg.toFixed(1)} mg/L\n`;
-    output += `Mg: ${mg_mg.toFixed(1)} mg/L\n`;
+    // Seleccionados
+    const seleccionados = {};
+    document.querySelectorAll('.fertilizante-meq:checked').forEach(cb => {
+        seleccionados[cb.value] = true;
+    });
+
+    const asignaciones = {};
+
+    // ===== PRIORIDAD 1: CALCIO =====
+    if (seleccionados["Nitrato de Calcio"] && caRestante > 0) {
+        let meq = caRestante;
+        asignaciones["Nitrato de Calcio"] = meq;
+        no3Restante -= meq;
+        caRestante = 0;
+    }
+
+    // ===== PRIORIDAD 2: MAP =====
+    if (seleccionados["Fosfato Monoamónico (MAP)"]) {
+        if (h2po4Restante > 0) {
+            let meq = h2po4Restante;
+            asignaciones["MAP (por P)"] = meq;
+            h2po4Restante = 0;
+            nh4Restante -= meq;
+        } else if (nh4Restante > 0) {
+            let meq = nh4Restante;
+            asignaciones["MAP (por NH4)"] = meq;
+            nh4Restante = 0;
+            h2po4Restante -= meq;
+        }
+    }
+
+    // ===== PRIORIDAD 3: K =====
+    if (kRestante > 0) {
+        if (seleccionados["Nitrato de Potasio"]) {
+            let meq = kRestante;
+            asignaciones["Nitrato de Potasio"] = meq;
+            no3Restante -= meq;
+            kRestante = 0;
+        } else if (seleccionados["Sulfato de Potasio"]) {
+            let meq = kRestante;
+            asignaciones["Sulfato de Potasio"] = meq;
+            so4Restante -= meq;
+            kRestante = 0;
+        }
+    }
+
+    // ===== PRIORIDAD 4: Mg =====
+    if (mgRestante > 0) {
+        if (seleccionados["Sulfato de Magnesio"]) {
+            let meq = mgRestante;
+            asignaciones["Sulfato de Magnesio"] = meq;
+            so4Restante -= meq;
+            mgRestante = 0;
+        } else if (seleccionados["Nitrato de Magnesio"]) {
+            let meq = mgRestante;
+            asignaciones["Nitrato de Magnesio"] = meq;
+            no3Restante -= meq;
+            mgRestante = 0;
+        }
+    }
+
+    // ===== PRIORIDAD 5: NO3 =====
+    if (no3Restante > 0) {
+        if (seleccionados["Nitrato de Potasio"] && kRestante === 0 && !asignaciones["Nitrato de Potasio"]) {
+            asignaciones["Nitrato de Potasio (extra)"] = no3Restante;
+            no3Restante = 0;
+        } else if (seleccionados["Nitrato de Magnesio"] && mgRestante === 0 && !asignaciones["Nitrato de Magnesio"]) {
+            asignaciones["Nitrato de Magnesio (extra)"] = no3Restante;
+            no3Restante = 0;
+        } else if (seleccionados["Nitrato de Calcio"] && caRestante === 0 && !asignaciones["Nitrato de Calcio"]) {
+            asignaciones["Nitrato de Calcio (extra)"] = no3Restante;
+            no3Restante = 0;
+        }
+    }
+
+    // ===== PRIORIDAD 6: SO4 =====
+    if (so4Restante > 0) {
+        if (seleccionados["Sulfato de Magnesio"] && mgRestante === 0 && !asignaciones["Sulfato de Magnesio"]) {
+            asignaciones["Sulfato de Magnesio (extra)"] = so4Restante;
+            so4Restante = 0;
+        } else if (seleccionados["Sulfato de Potasio"] && kRestante === 0 && !asignaciones["Sulfato de Potasio"]) {
+            asignaciones["Sulfato de Potasio (extra)"] = so4Restante;
+            so4Restante = 0;
+        }
+    }
+
+    // ===== PESOS EQUIVALENTES =====
+    const pesosEq = {
+        "Nitrato de Calcio": 118.08,
+        "Nitrato de Potasio": 101.10,
+        "Sulfato de Magnesio": 123.24,
+        "Fosfato Monoamónico (MAP)": 115.03,
+        "Sulfato de Potasio": 87.13,
+        "Nitrato de Magnesio": 128.21
+    };
+
+    // ===== CÁLCULO DE GRAMOS =====
+    for (let nombre in asignaciones) {
+        let base = nombre.split(" (")[0];
+        let peq = pesosEq[base];
+
+        if (!peq) continue;
+
+        let meq = asignaciones[nombre];
+        let gramos = (meq * peq / 1000) * vol;
+
+        resultados[nombre] = gramos.toFixed(2) + " g";
+    }
+
+    // ===== OUTPUT =====
+    let output = "";
+
+    for (let k in resultados) {
+        output += `${k}: ${resultados[k]}\n`;
+    }
+
+    if (no3Restante > 0.1) output += `NO₃⁻ faltante: ${no3Restante.toFixed(2)} meq\n`;
+    if (caRestante > 0.1) output += `Ca²⁺ faltante: ${caRestante.toFixed(2)} meq\n`;
+
+    if (output === "") output = "No se pudo calcular";
 
     document.getElementById('textoResultadoMEQ').innerText = output;
     document.getElementById('resultadoMEQ').style.display = 'block';
-});
-        
+
+});   
         // ----- 6. Microelementos -----
         document.getElementById('btnCalcularMicro').addEventListener('click', function() {
             let vol = parseFloat(document.getElementById('micro_vol').value) || 1000;
