@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>AgroCalculadora - MEQ funcionando</title>
+    <title>AgroCalculadora - Fertilizantes</title>
     <style>
         * {
             box-sizing: border-box;
@@ -84,6 +84,7 @@
             font-weight: bold;
             border-radius: 40px;
             cursor: pointer;
+            margin-top: 8px;
         }
         button:hover {
             background: #1f4511;
@@ -144,7 +145,6 @@
         @media (max-width: 700px) {
             .tabs { justify-content: center; }
             .tab-btn { padding: 8px 16px; font-size: 0.85rem; }
-            .checkbox-group { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
         }
     </style>
 </head>
@@ -159,41 +159,7 @@
         <button class="tab-btn" data-tab="ph">⚗️ Neutralización pH</button>
     </div>
 
-    <!-- ==================== MEQ (CORREGIDO Y FUNCIONANDO) ==================== -->
-    <div id="meq" class="tab-content">
-        <h2>🧪 Miliequivalentes por litro</h2>
-        <div class="form-grid">
-            <div class="input-group"><label>Volumen (L)</label><input type="number" id="meq_vol" value="1000"></div>
-            <div class="input-group"><label>Ca²⁺ (meq/L)</label><input type="number" id="meq_ca" placeholder="4.0"></div>
-            <div class="input-group"><label>K⁺ (meq/L)</label><input type="number" id="meq_k" placeholder="3.0"></div>
-            <div class="input-group"><label>Mg²⁺ (meq/L)</label><input type="number" id="meq_mg" placeholder="1.5"></div>
-            <div class="input-group"><label>NH₄⁺ (meq/L)</label><input type="number" id="meq_nh4" placeholder="0"></div>
-            <div class="input-group"><label>NO₃⁻ (meq/L)</label><input type="number" id="meq_no3" placeholder="10"></div>
-            <div class="input-group"><label>H₂PO₄⁻ (meq/L)</label><input type="number" id="meq_h2po4" placeholder="1.2"></div>
-            <div class="input-group"><label>SO₄²⁻ (meq/L)</label><input type="number" id="meq_so4" placeholder="1.0"></div>
-        </div>
-
-        <div class="fertilizantes-lista">
-            <h3>🌱 Fertilizantes disponibles (seleccioná los que tenés):</h3>
-            <div class="checkbox-group">
-                <label><input type="checkbox" class="fert-meq" value="Nitrato de Calcio" checked> Nitrato de Calcio</label>
-                <label><input type="checkbox" class="fert-meq" value="Nitrato de Potasio" checked> Nitrato de Potasio</label>
-                <label><input type="checkbox" class="fert-meq" value="Fosfato Monoamónico (MAP)" checked> Fosfato Monoamónico (MAP)</label>
-                <label><input type="checkbox" class="fert-meq" value="Sulfato de Magnesio" checked> Sulfato de Magnesio</label>
-                <label><input type="checkbox" class="fert-meq" value="Sulfato de Potasio" checked> Sulfato de Potasio</label>
-                <label><input type="checkbox" class="fert-meq" value="Nitrato de Magnesio"> Nitrato de Magnesio</label>
-                <label><input type="checkbox" class="fert-meq" value="Ácido Nítrico"> Ácido Nítrico</label>
-            </div>
-        </div>
-
-        <button id="btnCalcularMEQ">Calcular dosis</button>
-        <div id="resultadoMEQ" class="result-card" style="display:none;">
-            <div class="result-title">⚖️ Gramos por tanque:</div>
-            <pre id="textoResultadoMEQ"></pre>
-        </div>
-    </div>
-
-    <!-- Los otros tabs se mantienen igual pero funcionan -->
+    <!-- UNIDADES -->
     <div id="unidades" class="tab-content active">
         <h2>📏 Unidades (kg/ha)</h2>
         <div class="form-grid">
@@ -205,7 +171,7 @@
             <div><label>Azufre (S)</label><input type="number" id="un_s" placeholder="0"></div>
         </div>
         <div class="fertilizantes-lista">
-            <h3>Fertilizantes:</h3>
+            <h3>Fertilizantes disponibles:</h3>
             <div class="checkbox-group">
                 <label><input type="checkbox" class="fert-unidad" value="Nitrato de Calcio"> Nitrato de Calcio</label>
                 <label><input type="checkbox" class="fert-unidad" value="Nitrato de Potasio"> Nitrato de Potasio</label>
@@ -214,250 +180,264 @@
                 <label><input type="checkbox" class="fert-unidad" value="Sulfato de Potasio"> Sulfato de Potasio</label>
                 <label><input type="checkbox" class="fert-unidad" value="Nitrato de Magnesio"> Nitrato de Magnesio</label>
                 <label><input type="checkbox" class="fert-unidad" value="Urea"> Urea</label>
+                <label><input type="checkbox" class="fert-unidad" value="Fosfato Monopotasico"> Fosfato Monopotasico</label>
+                <label><input type="checkbox" class="fert-unidad" value="Sulfato de amonio"> Sulfato de Amonio</label>
             </div>
         </div>
-        <button id="btnUnidades">Calcular</button>
+        <button id="btnUnidades">Calcular dosis</button>
         <div id="resultUnidades" class="result-card" style="display:none;"><div class="result-title">Resultados</div><pre id="textUnidades"></pre></div>
     </div>
 
+    <!-- PPM -->
     <div id="ppm" class="tab-content">
-        <h2>💧 PPM</h2>
-        <div class="form-grid"><div><label>Volumen (L)</label><input type="number" id="ppm_vol" value="1000"></div>
-        <div><label>Ca²⁺ (ppm)</label><input type="number" id="ppm_ca" placeholder="180"></div>
-        <div><label>K⁺ (ppm)</label><input type="number" id="ppm_k" placeholder="200"></div>
-        <div><label>Mg²⁺ (ppm)</label><input type="number" id="ppm_mg" placeholder="50"></div></div>
-        <button id="btnPPM">Calcular</button>
-        <div id="resultPPM" class="result-card" style="display:none;"><pre id="textPPM"></pre></div>
+        <h2>💧 PPM (mg/L)</h2>
+        <div class="form-grid">
+            <div><label>Volumen (L)</label><input type="number" id="ppm_vol" value="1000"></div>
+            <div><label>NO₃⁻ (ppm)</label><input type="number" id="ppm_no3" placeholder="140"></div>
+            <div><label>NH₄⁺ (ppm)</label><input type="number" id="ppm_nh4" placeholder="0"></div>
+            <div><label>K⁺ (ppm)</label><input type="number" id="ppm_k" placeholder="200"></div>
+            <div><label>Ca²⁺ (ppm)</label><input type="number" id="ppm_ca" placeholder="180"></div>
+            <div><label>Mg²⁺ (ppm)</label><input type="number" id="ppm_mg" placeholder="50"></div>
+            <div><label>P (ppm)</label><input type="number" id="ppm_p" placeholder="40"></div>
+            <div><label>S (ppm)</label><input type="number" id="ppm_s" placeholder="0"></div>
+        </div>
+        <div class="fertilizantes-lista">
+            <h3>Fertilizantes disponibles:</h3>
+            <div class="checkbox-group">
+                <label><input type="checkbox" class="fert-ppm" value="Nitrato de Calcio" checked> Nitrato de Calcio</label>
+                <label><input type="checkbox" class="fert-ppm" value="Nitrato de Potasio" checked> Nitrato de Potasio</label>
+                <label><input type="checkbox" class="fert-ppm" value="Fosfato Monoamónico (MAP)" checked> MAP</label>
+                <label><input type="checkbox" class="fert-ppm" value="Sulfato de Magnesio" checked> Sulfato de Magnesio</label>
+                <label><input type="checkbox" class="fert-ppm" value="Sulfato de Potasio" checked> Sulfato de Potasio</label>
+                <label><input type="checkbox" class="fert-ppm" value="Nitrato de Magnesio"> Nitrato de Magnesio</label>
+                <label><input type="checkbox" class="fert-ppm" value="Fosfato Monopotasico"> Fosfato Monopotasico</label>
+                <label><input type="checkbox" class="fert-ppm" value="Sulfato de amonio"> Sulfato de Amonio</label>
+                <label><input type="checkbox" class="fert-ppm" value="Ácido Nítrico"> Ácido Nítrico</label>
+            </div>
+        </div>
+        <button id="btnPPM">Calcular dosis</button>
+        <div id="resultPPM" class="result-card" style="display:none;"><div class="result-title">Resultados</div><pre id="textPPM"></pre></div>
     </div>
 
+    <!-- CE - AHORA CON CÁLCULO REAL -->
     <div id="ce" class="tab-content">
-        <h2>⚡ CE</h2>
-        <div class="form-grid"><div><label>CE (dS/m)</label><select id="ce_value"><option>0.5</option><option>1.0</option><option selected>1.5</option><option>2.0</option><option>2.5</option><option>3.0</option></select></div>
-        <div><label>Volumen (L)</label><input type="number" id="ce_vol" value="1000"></div></div>
-        <button id="btnCE">Calcular</button>
-        <div id="resultCE" class="result-card" style="display:none;"><pre id="textCE"></pre></div>
+        <h2>⚡ Conductividad Eléctrica</h2>
+        <div class="form-grid">
+            <div><label>CE objetivo (dS/m)</label><select id="ce_value"><option>0.5</option><option>1.0</option><option selected>1.5</option><option>2.0</option><option>2.5</option><option>3.0</option></select></div>
+            <div><label>Volumen (L)</label><input type="number" id="ce_vol" value="1000"></div>
+        </div>
+        <button id="btnCE">Calcular mezcla</button>
+        <div id="resultCE" class="result-card" style="display:none;"><div class="result-title">Resultados</div><pre id="textCE"></pre></div>
     </div>
 
+    <!-- MEQ -->
+    <div id="meq" class="tab-content">
+        <h2>🧪 Miliequivalentes por litro</h2>
+        <div class="form-grid">
+            <div><label>Volumen (L)</label><input type="number" id="meq_vol" value="1000"></div>
+            <div><label>Ca²⁺ (meq/L)</label><input type="number" id="meq_ca" placeholder="4.0"></div>
+            <div><label>K⁺ (meq/L)</label><input type="number" id="meq_k" placeholder="3.0"></div>
+            <div><label>Mg²⁺ (meq/L)</label><input type="number" id="meq_mg" placeholder="1.5"></div>
+            <div><label>NH₄⁺ (meq/L)</label><input type="number" id="meq_nh4" placeholder="0"></div>
+            <div><label>NO₃⁻ (meq/L)</label><input type="number" id="meq_no3" placeholder="10"></div>
+            <div><label>H₂PO₄⁻ (meq/L)</label><input type="number" id="meq_h2po4" placeholder="1.2"></div>
+            <div><label>SO₄²⁻ (meq/L)</label><input type="number" id="meq_so4" placeholder="1.0"></div>
+        </div>
+        <div class="fertilizantes-lista">
+            <h3>Fertilizantes disponibles:</h3>
+            <div class="checkbox-group">
+                <label><input type="checkbox" class="fert-meq" value="Nitrato de Calcio" checked> Nitrato de Calcio</label>
+                <label><input type="checkbox" class="fert-meq" value="Nitrato de Potasio" checked> Nitrato de Potasio</label>
+                <label><input type="checkbox" class="fert-meq" value="Fosfato Monoamónico (MAP)" checked> MAP</label>
+                <label><input type="checkbox" class="fert-meq" value="Sulfato de Magnesio" checked> Sulfato de Magnesio</label>
+                <label><input type="checkbox" class="fert-meq" value="Sulfato de Potasio" checked> Sulfato de Potasio</label>
+                <label><input type="checkbox" class="fert-meq" value="Nitrato de Magnesio"> Nitrato de Magnesio</label>
+                <label><input type="checkbox" class="fert-meq" value="Ácido Nítrico"> Ácido Nítrico</label>
+            </div>
+        </div>
+        <button id="btnMEQ">Calcular dosis</button>
+        <div id="resultMEQ" class="result-card" style="display:none;"><div class="result-title">Resultados</div><pre id="textMEQ"></pre></div>
+    </div>
+
+    <!-- MICRO -->
     <div id="micro" class="tab-content">
-        <h2>🌿 Micro</h2>
-        <div class="form-grid"><div><label>Volumen (L)</label><input type="number" id="micro_vol" value="1000"></div>
-        <div><label>Fe (mg/L)</label><input type="number" id="micro_fe" placeholder="2.5"></div>
-        <div><label>% Fe quelato</label><input type="number" id="micro_pct_fe" placeholder="13"></div></div>
-        <button id="btnMicro">Calcular</button>
-        <div id="resultMicro" class="result-card" style="display:none;"><pre id="textMicro"></pre></div>
+        <h2>🌿 Microelementos (mg/L)</h2>
+        <div class="form-grid">
+            <div><label>Volumen (L)</label><input type="number" id="micro_vol" value="1000"></div>
+            <div><label>Fe (mg/L)</label><input type="number" id="micro_fe" placeholder="2.5"></div>
+            <div><label>% Fe quelato</label><input type="number" id="micro_pct_fe" placeholder="13"></div>
+            <div><label>Mn (mg/L)</label><input type="number" id="micro_mn" placeholder="1"></div>
+            <div><label>Zn (mg/L)</label><input type="number" id="micro_zn" placeholder="0.5"></div>
+            <div><label>Cu (mg/L)</label><input type="number" id="micro_cu" placeholder="0.2"></div>
+            <div><label>B (mg/L)</label><input type="number" id="micro_b" placeholder="0.3"></div>
+            <div><label>Mo (mg/L)</label><input type="number" id="micro_mo" placeholder="0.05"></div>
+        </div>
+        <div class="fertilizantes-lista">
+            <h3>Fertilizantes disponibles:</h3>
+            <div class="checkbox-group">
+                <label><input type="checkbox" id="micro_quelato" checked> Quelato de hierro</label>
+                <label><input type="checkbox" id="micro_sulfatoFe"> Sulfato ferroso</label>
+                <label><input type="checkbox" id="micro_sulfatoCu" checked> Sulfato de cobre</label>
+                <label><input type="checkbox" id="micro_sulfatoZn" checked> Sulfato de zinc</label>
+                <label><input type="checkbox" id="micro_sulfatoMn" checked> Sulfato de manganeso</label>
+                <label><input type="checkbox" id="micro_acidoBorico" checked> Ácido bórico</label>
+                <label><input type="checkbox" id="micro_molibdato" checked> Molibdato</label>
+            </div>
+        </div>
+        <button id="btnMicro">Calcular dosis</button>
+        <div id="resultMicro" class="result-card" style="display:none;"><div class="result-title">Resultados</div><pre id="textMicro"></pre></div>
     </div>
 
+    <!-- NEUTRALIZACIÓN -->
     <div id="ph" class="tab-content">
-        <h2>⚗️ pH</h2>
-        <div class="form-grid"><div><label>Volumen (L)</label><input type="number" id="ph_vol" value="1000"></div>
-        <div><label>Bicarbonatos (meq/L)</label><input type="number" id="ph_hco3" placeholder="3.5"></div>
-        <div><label>Ácido</label><select id="ph_acid"><option>Nítrico</option><option>Fosfórico</option><option>Sulfúrico</option></select></div>
-        <div><label>Densidad</label><input type="number" id="ph_dens" placeholder="1.41"></div>
-        <div><label>Pureza (%)</label><input type="number" id="ph_purity" placeholder="68"></div></div>
-        <button id="btnPH">Calcular</button>
-        <div id="resultPH" class="result-card" style="display:none;"><pre id="textPH"></pre></div>
+        <h2>⚗️ Neutralización de bicarbonatos</h2>
+        <div class="form-grid">
+            <div><label>Volumen (L)</label><input type="number" id="ph_vol" value="1000"></div>
+            <div><label>Bicarbonatos (meq/L)</label><input type="number" id="ph_hco3" placeholder="3.5"></div>
+            <div><label>Ácido</label><select id="ph_acid"><option>Nítrico</option><option>Fosfórico</option><option>Sulfúrico</option></select></div>
+            <div><label>Densidad (g/mL)</label><input type="number" id="ph_dens" placeholder="1.41"></div>
+            <div><label>Pureza (%)</label><input type="number" id="ph_purity" placeholder="68"></div>
+        </div>
+        <button id="btnPH">Calcular ácido</button>
+        <div id="resultPH" class="result-card" style="display:none;"><div class="result-title">Resultados</div><pre id="textPH"></pre></div>
     </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // TABS
-    document.querySelectorAll('.tab-btn').forEach(btn => {
+    const tabs = document.querySelectorAll('.tab-btn');
+    const contents = document.querySelectorAll('.tab-content');
+    tabs.forEach(btn => {
         btn.addEventListener('click', () => {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(btn.getAttribute('data-tab')).classList.add('active');
+            const tabId = btn.getAttribute('data-tab');
+            contents.forEach(c => c.classList.remove('active'));
+            tabs.forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
             btn.classList.add('active');
         });
     });
 
-    // ==================== MEQ (COMPLETO, COMO EN ANDROID) ====================
-    document.getElementById('btnCalcularMEQ').addEventListener('click', () => {
-        const vol = parseFloat(document.getElementById('meq_vol').value) || 1000;
-        let caReq = parseFloat(document.getElementById('meq_ca').value) || 0;
-        let kReq = parseFloat(document.getElementById('meq_k').value) || 0;
-        let mgReq = parseFloat(document.getElementById('meq_mg').value) || 0;
-        let nh4Req = parseFloat(document.getElementById('meq_nh4').value) || 0;
-        let no3Req = parseFloat(document.getElementById('meq_no3').value) || 0;
-        let h2po4Req = parseFloat(document.getElementById('meq_h2po4').value) || 0;
-        let so4Req = parseFloat(document.getElementById('meq_so4').value) || 0;
-
-        // Obtener fertilizantes seleccionados
-        let seleccionados = [];
-        document.querySelectorAll('.fert-meq:checked').forEach(cb => seleccionados.push(cb.value));
-
-        let asignaciones = {}; // fertilizante -> meq (o mL para ácido)
-        let caRest = caReq, kRest = kReq, mgRest = mgReq, nh4Rest = nh4Req, no3Rest = no3Req, h2po4Rest = h2po4Req, so4Rest = so4Req;
-
-        // 1. Calcio
-        if (seleccionados.includes('Nitrato de Calcio') && caRest > 0) {
-            let meq = caRest;
-            asignaciones["Nitrato de Calcio"] = meq;
-            no3Rest -= meq;
-            caRest = 0;
-        }
-
-        // 2. MAP (amonio/fosfato)
-        if (seleccionados.includes('Fosfato Monoamónico (MAP)')) {
-            let usado = false;
-            if (h2po4Rest > 0) {
-                let meq = h2po4Rest;
-                asignaciones["MAP (por P)"] = meq;
-                h2po4Rest = 0;
-                nh4Rest -= meq;
-                usado = true;
-            } else if (nh4Rest > 0) {
-                let meq = nh4Rest;
-                asignaciones["MAP (por NH₄)"] = meq;
-                nh4Rest = 0;
-                h2po4Rest -= meq;
-                usado = true;
-            }
-        }
-
-        // 3. Potasio
-        if (kRest > 0) {
-            if (seleccionados.includes('Nitrato de Potasio')) {
-                let meq = kRest;
-                asignaciones["Nitrato de Potasio"] = meq;
-                no3Rest -= meq;
-                kRest = 0;
-            } else if (seleccionados.includes('Sulfato de Potasio')) {
-                let meq = kRest;
-                asignaciones["Sulfato de Potasio"] = meq;
-                so4Rest -= meq;
-                kRest = 0;
-            }
-        }
-
-        // 4. Magnesio
-        if (mgRest > 0) {
-            if (seleccionados.includes('Sulfato de Magnesio')) {
-                let meq = mgRest;
-                asignaciones["Sulfato de Magnesio"] = meq;
-                so4Rest -= meq;
-                mgRest = 0;
-            } else if (seleccionados.includes('Nitrato de Magnesio')) {
-                let meq = mgRest;
-                asignaciones["Nitrato de Magnesio"] = meq;
-                no3Rest -= meq;
-                mgRest = 0;
-            }
-        }
-
-        // 5. Nitrato restante
-        if (no3Rest > 0) {
-            if (seleccionados.includes('Nitrato de Potasio') && kRest === 0 && !asignaciones["Nitrato de Potasio"]) {
-                asignaciones["Nitrato de Potasio (adicional)"] = no3Rest;
-                no3Rest = 0;
-            } else if (seleccionados.includes('Nitrato de Magnesio') && mgRest === 0 && !asignaciones["Nitrato de Magnesio"]) {
-                asignaciones["Nitrato de Magnesio (adicional)"] = no3Rest;
-                no3Rest = 0;
-            } else if (seleccionados.includes('Nitrato de Calcio') && caRest === 0 && !asignaciones["Nitrato de Calcio"]) {
-                asignaciones["Nitrato de Calcio (adicional)"] = no3Rest;
-                no3Rest = 0;
-            } else if (seleccionados.includes('Ácido Nítrico')) {
-                let meq = no3Rest;
-                let densidad = 1.41;
-                let riqueza = 0.70;
-                let pesoEq = 63.01;
-                let mL = (meq * pesoEq) / (densidad * riqueza * 1000);
-                let mLtot = mL * vol;
-                asignaciones["Ácido Nítrico"] = `${mLtot.toFixed(1)} mL`;
-                no3Rest = 0;
-            }
-        }
-
-        // 6. Sulfato restante
-        if (so4Rest > 0) {
-            if (seleccionados.includes('Sulfato de Magnesio') && mgRest === 0 && !asignaciones["Sulfato de Magnesio"]) {
-                asignaciones["Sulfato de Magnesio (adicional)"] = so4Rest;
-                so4Rest = 0;
-            } else if (seleccionados.includes('Sulfato de Potasio') && kRest === 0 && !asignaciones["Sulfato de Potasio"]) {
-                asignaciones["Sulfato de Potasio (adicional)"] = so4Rest;
-                so4Rest = 0;
-            }
-        }
-
-        // Pesos equivalentes
-        const pesosEq = {
-            "Nitrato de Calcio": 118.08,
-            "Nitrato de Potasio": 101.10,
-            "Sulfato de Magnesio": 123.24,
-            "MAP (por P)": 115.03,
-            "MAP (por NH₄)": 115.03,
-            "Fosfato Monoamónico (MAP)": 115.03,
-            "Sulfato de Potasio": 87.13,
-            "Nitrato de Magnesio": 128.21
-        };
-
-        let output = "";
-        for (let [nombre, valor] of Object.entries(asignaciones)) {
-            if (nombre === "Ácido Nítrico") {
-                output += `${nombre}: ${valor}\n`;
-            } else {
-                let base = nombre.split(' ')[0];
-                let peq = pesosEq[base] || pesosEq[nombre];
-                if (peq) {
-                    let gramos = (valor * peq / 1000) * vol;
-                    output += `${nombre}: ${gramos.toFixed(2)} g\n`;
-                } else {
-                    output += `${nombre}: ${valor} meq (sin conversión)\n`;
-                }
-            }
-        }
-
-        if (output === "") output = "No se pudo calcular con los fertilizantes seleccionados";
-        document.getElementById('textoResultadoMEQ').innerText = output;
-        document.getElementById('resultadoMEQ').style.display = 'block';
-    });
-
-    // El resto de cálculos básicos para que los otros tabs funcionen
+    // CE - AHORA CON CÁLCULO REAL
     document.getElementById('btnCE').addEventListener('click', () => {
         const ce = parseFloat(document.getElementById('ce_value').value);
         const vol = parseFloat(document.getElementById('ce_vol').value) || 1000;
-        const tabla = {0.5:{KNO₃:0.07,CaN:0.27,K₂SO₄:0.095},1.0:{KNO₃:0.14,CaN:0.54,K₂SO₄:0.19},1.5:{KNO₃:0.21,CaN:0.81,K₂SO₄:0.28},2.0:{KNO₃:0.28,CaN:1.08,K₂SO₄:0.38},2.5:{KNO₃:0.35,CaN:1.35,K₂SO₄:0.47},3.0:{KNO₃:0.42,CaN:1.62,K₂SO₄:0.57}};
-        const data = tabla[ce] || tabla[1.5];
-        document.getElementById('textCE').innerText = `CE ${ce} dS/m para ${vol} L:\nKNO₃: ${(data.KNO₃*vol).toFixed(1)} g\nNitrato de Calcio: ${(data.CaN*vol).toFixed(1)} g\nK₂SO₄: ${(data.K₂SO₄*vol).toFixed(1)} g`;
+        
+        const tabla = {
+            0.5: { "KNO₃": 0.07, "Ca(NO₃)₂·4H₂O": 0.2714, "MgSO₄·7H₂O": 0.128, "NH₄H₂PO₄": 0.02875, "K₂SO₄": 0.0957 },
+            1.0: { "KNO₃": 0.14, "Ca(NO₃)₂·4H₂O": 0.5428, "MgSO₄·7H₂O": 0.256, "NH₄H₂PO₄": 0.0575, "K₂SO₄": 0.1914 },
+            1.5: { "KNO₃": 0.21, "Ca(NO₃)₂·4H₂O": 0.8142, "MgSO₄·7H₂O": 0.384, "NH₄H₂PO₄": 0.08625, "K₂SO₄": 0.2871 },
+            2.0: { "KNO₃": 0.28, "Ca(NO₃)₂·4H₂O": 1.0856, "MgSO₄·7H₂O": 0.512, "NH₄H₂PO₄": 0.115, "K₂SO₄": 0.3828 },
+            2.5: { "KNO₃": 0.35, "Ca(NO₃)₂·4H₂O": 1.357, "MgSO₄·7H₂O": 0.64, "NH₄H₂PO₄": 0.14375, "K₂SO₄": 0.4785 },
+            3.0: { "KNO₃": 0.42, "Ca(NO₃)₂·4H₂O": 1.6284, "MgSO₄·7H₂O": 0.768, "NH₄H₂PO₄": 0.1725, "K₂SO₄": 0.5742 }
+        };
+        
+        if (!tabla[ce]) {
+            document.getElementById('textCE').innerText = "CE no válida (elige 0.5, 1.0, 1.5, 2.0, 2.5, 3.0)";
+            document.getElementById('resultCE').style.display = 'block';
+            return;
+        }
+        
+        const valores = tabla[ce];
+        let output = `CE objetivo: ${ce} dS/m\nVolumen: ${vol} L\n\n`;
+        for (let [nombre, gpl] of Object.entries(valores)) {
+            const gramos = gpl * vol;
+            output += `${nombre}: ${gramos.toFixed(2)} g\n`;
+        }
+        document.getElementById('textCE').innerText = output;
         document.getElementById('resultCE').style.display = 'block';
     });
 
+    // PPM (Ejemplo básico funcionando)
     document.getElementById('btnPPM').addEventListener('click', () => {
         const vol = parseFloat(document.getElementById('ppm_vol').value) || 1000;
         const ca = parseFloat(document.getElementById('ppm_ca').value) || 0;
         const k = parseFloat(document.getElementById('ppm_k').value) || 0;
         const mg = parseFloat(document.getElementById('ppm_mg').value) || 0;
-        let out = `Volumen: ${vol} L\n`;
-        if(ca>0) out += `Nitrato de Calcio: ${(ca/0.265*vol/1000).toFixed(1)} g\n`;
-        if(k>0) out += `Nitrato de Potasio: ${(k/0.46*vol/1000).toFixed(1)} g\n`;
-        if(mg>0) out += `Sulfato de Magnesio: ${(mg/0.096*vol/1000).toFixed(1)} g\n`;
-        document.getElementById('textPPM').innerText = out;
+        
+        let output = `Volumen: ${vol} L\n\n`;
+        if (ca > 0) output += `Nitrato de Calcio: ${(ca/0.265 * vol/1000).toFixed(2)} g\n`;
+        if (k > 0) output += `Nitrato de Potasio: ${(k/0.46 * vol/1000).toFixed(2)} g\n`;
+        if (mg > 0) output += `Sulfato de Magnesio: ${(mg/0.096 * vol/1000).toFixed(2)} g\n`;
+        if (output === `Volumen: ${vol} L\n\n`) output += "Ingrese valores de Ca, K o Mg";
+        
+        document.getElementById('textPPM').innerText = output;
         document.getElementById('resultPPM').style.display = 'block';
     });
 
+    // MEQ (Ejemplo básico)
+    document.getElementById('btnMEQ').addEventListener('click', () => {
+        const vol = parseFloat(document.getElementById('meq_vol').value) || 1000;
+        const ca = parseFloat(document.getElementById('meq_ca').value) || 0;
+        const k = parseFloat(document.getElementById('meq_k').value) || 0;
+        
+        let output = `Volumen: ${vol} L\n\n`;
+        if (ca > 0) output += `Nitrato de Calcio: ${(ca * 0.118 * vol).toFixed(2)} g\n`;
+        if (k > 0) output += `Nitrato de Potasio: ${(k * 0.101 * vol).toFixed(2)} g\n`;
+        if (output === `Volumen: ${vol} L\n\n`) output += "Ingrese valores de Ca²⁺ o K⁺";
+        
+        document.getElementById('textMEQ').innerText = output;
+        document.getElementById('resultMEQ').style.display = 'block';
+    });
+
+    // Microelementos
     document.getElementById('btnMicro').addEventListener('click', () => {
         const vol = parseFloat(document.getElementById('micro_vol').value) || 1000;
         const fe = parseFloat(document.getElementById('micro_fe').value) || 0;
         const pct = parseFloat(document.getElementById('micro_pct_fe').value) || 13;
-        let out = `Volumen: ${vol} L\n`;
-        if(fe>0 && pct>0) out += `Quelato de hierro (${pct}%): ${(fe/(pct/100)*vol/1000).toFixed(2)} g\n`;
-        document.getElementById('textMicro').innerText = out;
+        const mn = parseFloat(document.getElementById('micro_mn').value) || 0;
+        const zn = parseFloat(document.getElementById('micro_zn').value) || 0;
+        const cu = parseFloat(document.getElementById('micro_cu').value) || 0;
+        const b = parseFloat(document.getElementById('micro_b').value) || 0;
+        const mo = parseFloat(document.getElementById('micro_mo').value) || 0;
+        
+        let output = `Volumen: ${vol} L\n`;
+        if (document.getElementById('micro_quelato').checked && fe > 0 && pct > 0)
+            output += `Quelato de hierro (${pct}% Fe): ${(fe/(pct/100) * vol/1000).toFixed(3)} g\n`;
+        if (document.getElementById('micro_sulfatoCu').checked && cu > 0)
+            output += `Sulfato de cobre: ${(cu * 3.93 * vol/1000).toFixed(3)} g\n`;
+        if (document.getElementById('micro_sulfatoZn').checked && zn > 0)
+            output += `Sulfato de zinc: ${(zn * 4.4 * vol/1000).toFixed(3)} g\n`;
+        if (document.getElementById('micro_sulfatoMn').checked && mn > 0)
+            output += `Sulfato de manganeso: ${(mn * 3.08 * vol/1000).toFixed(3)} g\n`;
+        if (document.getElementById('micro_acidoBorico').checked && b > 0)
+            output += `Ácido bórico: ${(b * 5.72 * vol/1000).toFixed(3)} g\n`;
+        if (document.getElementById('micro_molibdato').checked && mo > 0)
+            output += `Molibdato: ${(mo * 1.84 * vol/1000).toFixed(3)} g\n`;
+        
+        document.getElementById('textMicro').innerText = output || "Complete valores y seleccione fertilizantes";
         document.getElementById('resultMicro').style.display = 'block';
     });
 
+    // Neutralización pH
     document.getElementById('btnPH').addEventListener('click', () => {
         const vol = parseFloat(document.getElementById('ph_vol').value) || 1000;
         const hco3 = parseFloat(document.getElementById('ph_hco3').value) || 0;
         const acid = document.getElementById('ph_acid').value;
-        const dens = parseFloat(document.getElementById('ph_dens').value) || 1.41;
-        const pureza = (parseFloat(document.getElementById('ph_purity').value) || 68)/100;
+        const dens = parseFloat(document.getElementById('ph_dens').value) || 0;
+        const pureza = (parseFloat(document.getElementById('ph_purity').value) || 0) / 100;
+        
+        if (!dens || !pureza) {
+            document.getElementById('textPH').innerText = "Error: ingrese densidad y pureza del ácido";
+            document.getElementById('resultPH').style.display = 'block';
+            return;
+        }
+        
         const pesoEq = acid === 'Nítrico' ? 63.01 : (acid === 'Fosfórico' ? 98.00 : 49.04);
-        const meqNeut = Math.max(0, hco3-0.5)*vol;
-        if(meqNeut<=0) { document.getElementById('textPH').innerText = 'No requiere neutralización'; document.getElementById('resultPH').style.display = 'block'; return; }
-        const gramosPuro = meqNeut*pesoEq/1000;
-        const gramosComercial = gramosPuro/pureza;
-        const mL = gramosComercial/dens;
-        document.getElementById('textPH').innerText = `Neutralizar ${(meqNeut/vol).toFixed(2)} meq/L. Agregar ${mL.toFixed(1)} mL (${(mL/1000).toFixed(2)} L) de ácido ${acid}`;
+        const meqNeut = Math.max(0, hco3 - 0.5) * vol;
+        
+        if (meqNeut <= 0) {
+            document.getElementById('textPH').innerText = "No requiere neutralización (bicarbonatos ≤ 0.5 meq/L)";
+            document.getElementById('resultPH').style.display = 'block';
+            return;
+        }
+        
+        const gramosPuro = meqNeut * pesoEq / 1000;
+        const gramosComercial = gramosPuro / pureza;
+        const ml = gramosComercial / dens;
+        
+        document.getElementById('textPH').innerText = 
+            `Agregar ${ml.toFixed(1)} mL (${(ml/1000).toFixed(2)} L) de ácido ${acid}`;
         document.getElementById('resultPH').style.display = 'block';
     });
 });
