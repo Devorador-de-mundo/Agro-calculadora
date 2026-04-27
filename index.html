@@ -515,128 +515,139 @@
         });
 
         // ==================== MEQ (como Android) ====================
-        document.getElementById('calc_meq').addEventListener('click', () => {
-            const vol = parseFloat(document.getElementById('meq_vol').value) || 1000;
-            let caReq = parseFloat(document.getElementById('meq_ca').value) || 0;
-            let kReq = parseFloat(document.getElementById('meq_k').value) || 0;
-            let mgReq = parseFloat(document.getElementById('meq_mg').value) || 0;
-            let nh4Req = parseFloat(document.getElementById('meq_nh4').value) || 0;
-            let no3Req = parseFloat(document.getElementById('meq_no3').value) || 0;
-            let h2po4Req = parseFloat(document.getElementById('meq_h2po4').value) || 0;
-            let so4Req = parseFloat(document.getElementById('meq_so4').value) || 0;
+     // ==================== MEQ (CÁLCULO COMPLETO) ====================
+document.getElementById('btnCalcularMEQ').addEventListener('click', () => {
+    const vol = parseFloat(document.getElementById('meq_vol').value) || 1000;
+    let caReq = parseFloat(document.getElementById('meq_ca').value) || 0;
+    let kReq = parseFloat(document.getElementById('meq_k').value) || 0;
+    let mgReq = parseFloat(document.getElementById('meq_mg').value) || 0;
+    let nh4Req = parseFloat(document.getElementById('meq_nh4').value) || 0;
+    let no3Req = parseFloat(document.getElementById('meq_no3').value) || 0;
+    let h2po4Req = parseFloat(document.getElementById('meq_h2po4').value) || 0;
+    let so4Req = parseFloat(document.getElementById('meq_so4').value) || 0;
 
-            let seleccionados = getSelectedFertilizers('meq');
-            let asignaciones = {};
-            let caRest = caReq, kRest = kReq, mgRest = mgReq, nh4Rest = nh4Req, no3Rest = no3Req, h2po4Rest = h2po4Req, so4Rest = so4Req;
+    let seleccionados = [];
+    document.querySelectorAll('.fert-meq:checked').forEach(cb => seleccionados.push(cb.value));
 
-            // Calcio
-            if (seleccionados.includes('Nitrato de Calcio') && caRest > 0) {
-                let meq = caRest;
-                asignaciones["Nitrato de Calcio"] = meq;
-                no3Rest -= meq;
-                caRest = 0;
+    let asignaciones = {};
+    let caRest = caReq, kRest = kReq, mgRest = mgReq, nh4Rest = nh4Req, no3Rest = no3Req, h2po4Rest = h2po4Req, so4Rest = so4Req;
+
+    // 1. Calcio
+    if (seleccionados.includes('Nitrato de Calcio') && caRest > 0) {
+        let meq = caRest;
+        asignaciones["Nitrato de Calcio"] = meq;
+        no3Rest -= meq;
+        caRest = 0;
+    }
+
+    // 2. MAP
+    if (seleccionados.includes('Fosfato Monoamónico (MAP)')) {
+        if (h2po4Rest > 0) {
+            let meq = h2po4Rest;
+            asignaciones["Fosfato Monoamónico (MAP) (por P)"] = meq;
+            h2po4Rest = 0;
+            nh4Rest -= meq;
+        } else if (nh4Rest > 0) {
+            let meq = nh4Rest;
+            asignaciones["Fosfato Monoamónico (MAP) (por NH₄)"] = meq;
+            nh4Rest = 0;
+            h2po4Rest -= meq;
+        }
+    }
+
+    // 3. Potasio
+    if (kRest > 0) {
+        if (seleccionados.includes('Nitrato de Potasio')) {
+            let meq = kRest;
+            asignaciones["Nitrato de Potasio"] = meq;
+            no3Rest -= meq;
+            kRest = 0;
+        } else if (seleccionados.includes('Sulfato de Potasio')) {
+            let meq = kRest;
+            asignaciones["Sulfato de Potasio"] = meq;
+            so4Rest -= meq;
+            kRest = 0;
+        }
+    }
+
+    // 4. Magnesio
+    if (mgRest > 0) {
+        if (seleccionados.includes('Sulfato de Magnesio')) {
+            let meq = mgRest;
+            asignaciones["Sulfato de Magnesio"] = meq;
+            so4Rest -= meq;
+            mgRest = 0;
+        } else if (seleccionados.includes('Nitrato de Magnesio')) {
+            let meq = mgRest;
+            asignaciones["Nitrato de Magnesio"] = meq;
+            no3Rest -= meq;
+            mgRest = 0;
+        }
+    }
+
+    // 5. Nitrato restante
+    if (no3Rest > 0) {
+        if (seleccionados.includes('Nitrato de Potasio') && kRest === 0 && !asignaciones["Nitrato de Potasio"]) {
+            asignaciones["Nitrato de Potasio (adicional)"] = no3Rest;
+            no3Rest = 0;
+        } else if (seleccionados.includes('Nitrato de Magnesio') && mgRest === 0 && !asignaciones["Nitrato de Magnesio"]) {
+            asignaciones["Nitrato de Magnesio (adicional)"] = no3Rest;
+            no3Rest = 0;
+        } else if (seleccionados.includes('Nitrato de Calcio') && caRest === 0 && !asignaciones["Nitrato de Calcio"]) {
+            asignaciones["Nitrato de Calcio (adicional)"] = no3Rest;
+            no3Rest = 0;
+        } else if (seleccionados.includes('Ácido Nítrico')) {
+            let meq = no3Rest;
+            let densidad = 1.41;
+            let riqueza = 0.70;
+            let pesoEq = 63.01;
+            let mL = (meq * pesoEq) / (densidad * riqueza * 1000);
+            let mLtot = mL * vol;
+            asignaciones["Ácido Nítrico"] = `${mLtot.toFixed(1)} mL`;
+            no3Rest = 0;
+        }
+    }
+
+    // 6. Sulfato restante
+    if (so4Rest > 0) {
+        if (seleccionados.includes('Sulfato de Magnesio') && mgRest === 0 && !asignaciones["Sulfato de Magnesio"]) {
+            asignaciones["Sulfato de Magnesio (adicional)"] = so4Rest;
+            so4Rest = 0;
+        } else if (seleccionados.includes('Sulfato de Potasio') && kRest === 0 && !asignaciones["Sulfato de Potasio"]) {
+            asignaciones["Sulfato de Potasio (adicional)"] = so4Rest;
+            so4Rest = 0;
+        }
+    }
+
+    const pesosEq = {
+        "Nitrato de Calcio": 118.08,
+        "Nitrato de Potasio": 101.10,
+        "Sulfato de Magnesio": 123.24,
+        "Fosfato Monoamónico (MAP)": 115.03,
+        "Fosfato Monoamónico (MAP) (por P)": 115.03,
+        "Fosfato Monoamónico (MAP) (por NH₄)": 115.03,
+        "Sulfato de Potasio": 87.13,
+        "Nitrato de Magnesio": 128.21
+    };
+
+    let output = "";
+    for (let [nombre, valor] of Object.entries(asignaciones)) {
+        if (nombre === "Ácido Nítrico") {
+            output += `${nombre}: ${valor}\n`;
+        } else {
+            let peq = pesosEq[nombre];
+            if (!peq) peq = pesosEq[nombre.split(' ')[0] + " " + nombre.split(' ')[1]];
+            if (peq) {
+                let gramos = (valor * peq / 1000) * vol;
+                output += `${nombre}: ${gramos.toFixed(2)} g\n`;
             }
+        }
+    }
 
-            // MAP
-            if (seleccionados.includes('Fosfato Monoamónico (MAP)')) {
-                let meq = 0;
-                if (h2po4Rest > 0) meq = h2po4Rest;
-                else if (nh4Rest > 0) meq = nh4Rest;
-                if (meq > 0) {
-                    asignaciones["Fosfato Monoamónico (MAP)"] = meq;
-                    h2po4Rest = Math.max(0, h2po4Rest - meq);
-                    nh4Rest = Math.max(0, nh4Rest - meq);
-                }
-            }
-
-            // Potasio
-            if (kRest > 0) {
-                if (seleccionados.includes('Nitrato de Potasio')) {
-                    let meq = kRest;
-                    asignaciones["Nitrato de Potasio"] = meq;
-                    no3Rest -= meq;
-                    kRest = 0;
-                } else if (seleccionados.includes('Sulfato de Potasio')) {
-                    let meq = kRest;
-                    asignaciones["Sulfato de Potasio"] = meq;
-                    so4Rest -= meq;
-                    kRest = 0;
-                }
-            }
-
-            // Magnesio
-            if (mgRest > 0) {
-                if (seleccionados.includes('Sulfato de Magnesio')) {
-                    let meq = mgRest;
-                    asignaciones["Sulfato de Magnesio"] = meq;
-                    so4Rest -= meq;
-                    mgRest = 0;
-                } else if (seleccionados.includes('Nitrato de Magnesio')) {
-                    let meq = mgRest;
-                    asignaciones["Nitrato de Magnesio"] = meq;
-                    no3Rest -= meq;
-                    mgRest = 0;
-                }
-            }
-
-            // Nitrato restante
-            if (no3Rest > 0) {
-                if (seleccionados.includes('Nitrato de Potasio') && kRest === 0 && !asignaciones["Nitrato de Potasio"]) {
-                    asignaciones["Nitrato de Potasio (adicional)"] = no3Rest;
-                    no3Rest = 0;
-                } else if (seleccionados.includes('Nitrato de Magnesio') && mgRest === 0 && !asignaciones["Nitrato de Magnesio"]) {
-                    asignaciones["Nitrato de Magnesio (adicional)"] = no3Rest;
-                    no3Rest = 0;
-                } else if (seleccionados.includes('Nitrato de Calcio') && caRest === 0 && !asignaciones["Nitrato de Calcio"]) {
-                    asignaciones["Nitrato de Calcio (adicional)"] = no3Rest;
-                    no3Rest = 0;
-                } else if (seleccionados.includes('Ácido Nítrico')) {
-                    let meq = no3Rest;
-                    let densidad = 1.41;
-                    let riqueza = 0.70;
-                    let pesoEq = 63.01;
-                    let mL = (meq * pesoEq) / (densidad * riqueza * 1000);
-                    let mLtot = mL * vol;
-                    asignaciones["Ácido Nítrico"] = mLtot;
-                    no3Rest = 0;
-                }
-            }
-
-            // Sulfato restante
-            if (so4Rest > 0) {
-                if (seleccionados.includes('Sulfato de Magnesio') && mgRest === 0 && !asignaciones["Sulfato de Magnesio"]) {
-                    asignaciones["Sulfato de Magnesio (adicional)"] = so4Rest;
-                    so4Rest = 0;
-                } else if (seleccionados.includes('Sulfato de Potasio') && kRest === 0 && !asignaciones["Sulfato de Potasio"]) {
-                    asignaciones["Sulfato de Potasio (adicional)"] = so4Rest;
-                    so4Rest = 0;
-                }
-            }
-
-            const pesosEq = {
-                "Nitrato de Calcio": 118.08,
-                "Nitrato de Potasio": 101.10,
-                "Sulfato de Magnesio": 123.24,
-                "Fosfato Monoamónico (MAP)": 115.03,
-                "Sulfato de Potasio": 87.13,
-                "Nitrato de Magnesio": 128.21
-            };
-
-            let text = '';
-            for (let [nombre, meq] of Object.entries(asignaciones)) {
-                let base = nombre.split(' ')[0];
-                if (pesosEq[base]) {
-                    let gramos = (meq * pesosEq[base] / 1000) * vol;
-                    text += `${nombre}: ${gramos.toFixed(2)} g\n`;
-                } else if (nombre === 'Ácido Nítrico') {
-                    text += `Ácido Nítrico: ${meq.toFixed(2)} mL\n`;
-                }
-            }
-            if (text === '') text = 'No hay resultados. Verificá selección e ingresá valores.';
-            document.getElementById('pre_meq').innerText = text;
-            document.getElementById('result_meq').style.display = 'block';
-        });
-
+    if (output === "") output = "No se pudo calcular con los fertilizantes seleccionados";
+    document.getElementById('textoResultadoMEQ').innerText = output;
+    document.getElementById('resultadoMEQ').style.display = 'block';
+});
         // ==================== MICROELEMENTOS ====================
         document.getElementById('calc_micro').addEventListener('click', () => {
             const vol = parseFloat(document.getElementById('micro_vol').value) || 1000;
