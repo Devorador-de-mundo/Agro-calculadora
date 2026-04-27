@@ -485,12 +485,45 @@
         
         // ----- 5. MEQ -----
         document.getElementById('btnCalcularMEQ').addEventListener('click', function() {
-            let vol = parseFloat(document.getElementById('meq_vol').value) || 1000;
-            let output = `Volumen: ${vol} L\n\n`;
-            output += "[LOG] Cálculo de MEQ pendiente de implementación completa.";
-            document.getElementById('textoResultadoMEQ').innerText = output;
-            document.getElementById('resultadoMEQ').style.display = 'block';
-        });
+    let vol = parseFloat(document.getElementById('meq_vol').value) || 1000;
+
+    let ca = parseFloat(document.getElementById('meq_ca').value) || 0;
+    let k = parseFloat(document.getElementById('meq_k').value) || 0;
+    let mg = parseFloat(document.getElementById('meq_mg').value) || 0;
+    let nh4 = parseFloat(document.getElementById('meq_nh4').value) || 0;
+    let no3 = parseFloat(document.getElementById('meq_no3').value) || 0;
+    let h2po4 = parseFloat(document.getElementById('meq_h2po4').value) || 0;
+    let so4 = parseFloat(document.getElementById('meq_so4').value) || 0;
+
+    let cationes = ca + k + mg + nh4;
+    let aniones = no3 + h2po4 + so4;
+
+    let output = `Volumen: ${vol} L\n\n`;
+
+    output += `Cationes: ${cationes.toFixed(2)} meq/L\n`;
+    output += `Aniones: ${aniones.toFixed(2)} meq/L\n`;
+
+    let balance = cationes - aniones;
+
+    if (Math.abs(balance) > 0.2) {
+        output += `⚠️ Desbalance iónico: ${balance.toFixed(2)} meq/L\n`;
+    } else {
+        output += `✅ Solución balanceada\n`;
+    }
+
+    // Conversión ejemplo
+    let ca_mg = ca * 20;
+    let k_mg = k * 39;
+    let mg_mg = mg * 12.15;
+
+    output += `\n--- Conversión a mg/L ---\n`;
+    output += `Ca: ${ca_mg.toFixed(1)} mg/L\n`;
+    output += `K: ${k_mg.toFixed(1)} mg/L\n`;
+    output += `Mg: ${mg_mg.toFixed(1)} mg/L\n`;
+
+    document.getElementById('textoResultadoMEQ').innerText = output;
+    document.getElementById('resultadoMEQ').style.display = 'block';
+});
         
         // ----- 6. Microelementos -----
         document.getElementById('btnCalcularMicro').addEventListener('click', function() {
