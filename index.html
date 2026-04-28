@@ -454,24 +454,215 @@
         });
         
         // ----- 3. Lógica de PPM (para que no esté vacía) -----
-        document.getElementById('btnCalcularPPM').addEventListener('click', function() {
-            let vol = parseFloat(document.getElementById('ppm_vol').value) || 1000;
-            let no3Req = parseFloat(document.getElementById('ppm_no3').value) || 0;
-            let nh4Req = parseFloat(document.getElementById('ppm_nh4').value) || 0;
-            let kReq = parseFloat(document.getElementById('ppm_k').value) || 0;
-            let caReq = parseFloat(document.getElementById('ppm_ca').value) || 0;
-            let mgReq = parseFloat(document.getElementById('ppm_mg').value) || 0;
-            let pReq = parseFloat(document.getElementById('ppm_p').value) || 0;
-            let sReq = parseFloat(document.getElementById('ppm_s').value) || 0;
-            
-            let output = `Volumen: ${vol} L\n\n`;
-            output += `NO₃⁻: ${no3Req} ppm | NH₄⁺: ${nh4Req} ppm | K⁺: ${kReq} ppm\n`;
-            output += `Ca²⁺: ${caReq} ppm | Mg²⁺: ${mgReq} ppm | P: ${pReq} ppm | S: ${sReq} ppm\n`;
-            output += "\n[LOG] Cálculo de PPM pendiente de implementación completa (por ahora solo muestra valores).";
-            
-            document.getElementById('textoResultadoPPM').innerText = output;
-            document.getElementById('resultadoPPM').style.display = 'block';
-        });
+       document.getElementById('btnCalcularPPM').addEventListener('click', function () {
+
+    const resultados = {};
+    const aportes = {};
+    const vol = parseFloat(document.getElementById('ppm_vol').value) || 1000;
+
+    if (vol <= 0) {
+        document.getElementById('textoResultadoPPM').innerText = "El volumen debe ser mayor a 0";
+        return;
+    }
+
+    // ===== REQUERIMIENTOS =====
+    let no3Restante = parseFloat(document.getElementById('ppm_no3').value) || 0;
+    let nh4Restante = parseFloat(document.getElementById('ppm_nh4').value) || 0;
+    let kRestante = parseFloat(document.getElementById('ppm_k').value) || 0;
+    let caRestante = parseFloat(document.getElementById('ppm_ca').value) || 0;
+    let mgRestante = parseFloat(document.getElementById('ppm_mg').value) || 0;
+    let pRestante = parseFloat(document.getElementById('ppm_p').value) || 0;
+    let sRestante = parseFloat(document.getElementById('ppm_s').value) || 0;
+
+    // ACUMULADORES
+    let no3Cubierto = 0, nh4Cubierto = 0, kCubierto = 0;
+    let caCubierto = 0, mgCubierto = 0, pCubierto = 0, sCubierto = 0;
+
+    // SELECCIONADOS
+    const sel = {};
+    document.querySelectorAll('.fertilizante-ppm:checked').forEach(cb => {
+        sel[cb.value] = true;
+    });
+
+    // helper
+    const gTotal = (cantidad) => (cantidad * vol) / 1000;
+    const f = (g) => g.toFixed(2) + " g";
+
+    // ===== 1. CALCIO =====
+    if (sel["Nitrato de Calcio"] && caRestante > 0) {
+        let cantidad = caRestante / 0.265;
+        resultados["Nitrato de Calcio (por Ca)"] = f(gTotal(cantidad));
+
+        let no3A = cantidad * 0.155;
+        let caA = cantidad * 0.265;
+
+        no3Restante = Math.max(0, no3Restante - no3A);
+        caRestante = 0;
+
+        no3Cubierto += no3A;
+        caCubierto += caA;
+    }
+
+    // ===== 2. POTASIO =====
+    if (kRestante > 0) {
+
+        if (sel["Nitrato de Potasio"]) {
+            let cantidad = kRestante / 0.46;
+            resultados["Nitrato de Potasio (por K)"] = f(gTotal(cantidad));
+
+            let no3A = cantidad * 0.13;
+            let kA = cantidad * 0.46;
+
+            no3Restante = Math.max(0, no3Restante - no3A);
+            kRestante = 0;
+
+            no3Cubierto += no3A;
+            kCubierto += kA;
+        }
+
+        if (sel["Fosfato Monopotasico"]) {
+            let cantidad = kRestante / 0.34;
+            resultados["Fosfato Monopotasico (por K)"] = f(gTotal(cantidad));
+
+            let pA = cantidad * 0.52;
+            let kA = cantidad * 0.34;
+
+            pRestante = Math.max(0, pRestante - pA);
+            kRestante = 0;
+
+            pCubierto += pA;
+            kCubierto += kA;
+        }
+        else if (sel["Sulfato de Potasio"]) {
+            let cantidad = kRestante / 0.50;
+            resultados["Sulfato de Potasio (por K)"] = f(gTotal(cantidad));
+
+            let sA = cantidad * 0.18;
+            let kA = cantidad * 0.50;
+
+            sRestante = Math.max(0, sRestante - sA);
+            kRestante = 0;
+
+            sCubierto += sA;
+            kCubierto += kA;
+        }
+    }
+
+    // ===== 3. MAGNESIO =====
+    if (mgRestante > 0) {
+
+        if (sel["Sulfato de Magnesio"]) {
+            let cantidad = mgRestante / 0.09;
+            resultados["Sulfato de Magnesio (por Mg)"] = f(gTotal(cantidad));
+
+            let sA = cantidad * 0.13;
+            let mgA = cantidad * 0.09;
+
+            sRestante = Math.max(0, sRestante - sA);
+            mgRestante = 0;
+
+            sCubierto += sA;
+            mgCubierto += mgA;
+        }
+        else if (sel["Nitrato de Magnesio"]) {
+            let cantidad = mgRestante / 0.09;
+            resultados["Nitrato de Magnesio (por Mg)"] = f(gTotal(cantidad));
+
+            let no3A = cantidad * 0.11;
+            let mgA = cantidad * 0.09;
+
+            no3Restante = Math.max(0, no3Restante - no3A);
+            mgRestante = 0;
+
+            no3Cubierto += no3A;
+            mgCubierto += mgA;
+        }
+    }
+
+    // ===== 4. MAP =====
+    if (sel["Fosfato Monoamónico (MAP)"] && (pRestante > 0 || nh4Restante > 0)) {
+
+        let cP = pRestante > 0 ? pRestante / 0.52 : Infinity;
+        let cNH4 = nh4Restante > 0 ? nh4Restante / 0.12 : Infinity;
+
+        let cantidad = Math.min(cP, cNH4);
+
+        resultados["MAP"] = f(gTotal(cantidad));
+
+        let nh4A = cantidad * 0.12;
+        let pA = cantidad * 0.52;
+
+        pRestante = Math.max(0, pRestante - pA);
+        nh4Restante = Math.max(0, nh4Restante - nh4A);
+
+        pCubierto += pA;
+        nh4Cubierto += nh4A;
+    }
+
+    // ===== 5. NO3 RESTANTE =====
+    if (no3Restante > 0) {
+
+        if (sel["Nitrato de Potasio"] && kRestante === 0) {
+            let cantidad = no3Restante / 0.13;
+            resultados["Nitrato de Potasio (NO3)"] = f(gTotal(cantidad));
+
+            let no3A = cantidad * 0.13;
+            let kA = cantidad * 0.46;
+
+            no3Restante = 0;
+
+            no3Cubierto += no3A;
+            kCubierto += kA;
+        }
+
+        else if (sel["Nitrato de Magnesio"] && mgRestante === 0) {
+            let cantidad = no3Restante / 0.11;
+            resultados["Nitrato de Magnesio (NO3)"] = f(gTotal(cantidad));
+
+            let no3A = cantidad * 0.11;
+            let mgA = cantidad * 0.09;
+
+            no3Restante = 0;
+
+            no3Cubierto += no3A;
+            mgCubierto += mgA;
+        }
+
+        else if (sel["Nitrato de Calcio"] && caRestante === 0) {
+            let cantidad = no3Restante / 0.155;
+            resultados["Nitrato de Calcio (NO3)"] = f(gTotal(cantidad));
+
+            let no3A = cantidad * 0.155;
+            let caA = cantidad * 0.265;
+
+            no3Restante = 0;
+
+            no3Cubierto += no3A;
+            caCubierto += caA;
+        }
+    }
+
+    // ===== OUTPUT =====
+    let out = "";
+
+    for (let k in resultados) {
+        out += `${k}: ${resultados[k]}\n`;
+    }
+
+    out += "\n--- APORTES ---\n";
+    if (no3Cubierto > 0) out += `NO3: ${no3Cubierto.toFixed(1)} ppm\n`;
+    if (kCubierto > 0) out += `K: ${kCubierto.toFixed(1)} ppm\n`;
+    if (caCubierto > 0) out += `Ca: ${caCubierto.toFixed(1)} ppm\n`;
+    if (mgCubierto > 0) out += `Mg: ${mgCubierto.toFixed(1)} ppm\n`;
+    if (pCubierto > 0) out += `P: ${pCubierto.toFixed(1)} ppm\n`;
+    if (sCubierto > 0) out += `S: ${sCubierto.toFixed(1)} ppm\n`;
+
+    if (out === "") out = "No se pudo calcular";
+
+    document.getElementById('textoResultadoPPM').innerText = out;
+    document.getElementById('resultadoPPM').style.display = 'block';
+
+});
         
         // ----- 4. CE -----
         document.getElementById('btnCalcularCE').addEventListener('click', function() {
