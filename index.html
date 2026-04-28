@@ -665,14 +665,87 @@
 });
         
         // ----- 4. CE -----
-        document.getElementById('btnCalcularCE').addEventListener('click', function() {
-            let ce = parseFloat(document.getElementById('ce_value').value);
-            let vol = parseFloat(document.getElementById('ce_vol').value) || 1000;
-            let output = `CE objetivo: ${ce} dS/m\nVolumen: ${vol} L\n\n`;
-            output += "[LOG] Cálculo de CE pendiente de implementación.";
-            document.getElementById('textoResultadoCE').innerText = output;
-            document.getElementById('resultadoCE').style.display = 'block';
-        });
+        document.getElementById('btnCalcularCE').addEventListener('click', function () {
+
+    const resultados = {};
+    const vol = parseFloat(document.getElementById('ce_vol').value) || 1000;
+    const ce = parseFloat(document.getElementById('ce_value').value) || 1.5;
+
+    // ===== TABLA (igual que tu Kotlin) =====
+    const tabla = {
+        0.5: {
+            "KNO₃": 0.07,
+            "Ca(NO₃)₂·4H₂O": 0.2714,
+            "MgSO₄·7H₂O": 0.128,
+            "NH₄H₂PO₄": 0.02875,
+            "K₂SO₄": 0.0957
+        },
+        1.0: {
+            "KNO₃": 0.14,
+            "Ca(NO₃)₂·4H₂O": 0.5428,
+            "MgSO₄·7H₂O": 0.256,
+            "NH₄H₂PO₄": 0.0575,
+            "K₂SO₄": 0.1914
+        },
+        1.5: {
+            "KNO₃": 0.21,
+            "Ca(NO₃)₂·4H₂O": 0.8142,
+            "MgSO₄·7H₂O": 0.384,
+            "NH₄H₂PO₄": 0.08625,
+            "K₂SO₄": 0.2871
+        },
+        2.0: {
+            "KNO₃": 0.28,
+            "Ca(NO₃)₂·4H₂O": 1.0856,
+            "MgSO₄·7H₂O": 0.512,
+            "NH₄H₂PO₄": 0.115,
+            "K₂SO₄": 0.3828
+        },
+        2.5: {
+            "KNO₃": 0.35,
+            "Ca(NO₃)₂·4H₂O": 1.357,
+            "MgSO₄·7H₂O": 0.64,
+            "NH₄H₂PO₄": 0.14375,
+            "K₂SO₄": 0.4785
+        },
+        3.0: {
+            "KNO₃": 0.42,
+            "Ca(NO₃)₂·4H₂O": 1.6284,
+            "MgSO₄·7H₂O": 0.768,
+            "NH₄H₂PO₄": 0.1725,
+            "K₂SO₄": 0.5742
+        }
+    };
+
+    // ===== VALIDACIÓN =====
+    const valores = tabla[ce];
+
+    if (!valores) {
+        document.getElementById('textoResultadoCE').innerText =
+            "CE no válida (usa 0.5, 1.0, 1.5, 2.0, 2.5, 3.0)";
+        document.getElementById('resultadoCE').style.display = 'block';
+        return;
+    }
+
+    // ===== CÁLCULO =====
+    for (let nombre in valores) {
+        let gramosPorLitro = valores[nombre];
+        let gramosTotales = gramosPorLitro * vol;
+
+        resultados[nombre] = gramosTotales.toFixed(2) + " g";
+    }
+
+    // ===== OUTPUT =====
+    let output = `CE objetivo: ${ce} dS/m\nVolumen: ${vol} L\n\n`;
+
+    for (let k in resultados) {
+        output += `${k}: ${resultados[k]}\n`;
+    }
+
+    document.getElementById('textoResultadoCE').innerText = output;
+    document.getElementById('resultadoCE').style.display = 'block';
+
+});
          // ----- 3. Lógica de MEQ (para que no esté vacía) -----
      document.getElementById('btnCalcularMEQ').addEventListener('click', function () {
 
