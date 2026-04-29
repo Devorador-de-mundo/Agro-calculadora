@@ -375,145 +375,181 @@
             "Sulfato de amonio": { N: 0.21, SO4: 0.24 }
         };
         //----Meq-------
-     document.getElementById('btnCalcularMEQ').onclick = function () {
+    document.getElementById('btnCalcularMEQ').onclick = function () {
 
+    let resultados = {};
     let vol = parseFloat(meq_vol.value) || 1000;
 
-    let requerimientos = {
-        Ca: parseFloat(meq_ca.value) || 0,
-        K: parseFloat(meq_k.value) || 0,
-        Mg: parseFloat(meq_mg.value) || 0,
-        NH4: parseFloat(meq_nh4.value) || 0,
-        NO3: parseFloat(meq_no3.value) || 0,
-        H2PO4: parseFloat(meq_h2po4.value) || 0,
-        SO4: parseFloat(meq_so4.value) || 0
-    };
-
-    // ===== FERTILIZANTES =====
-    const fertilizantes = {
-        "Nitrato de Calcio": { Ca:1, NO3:1 },
-        "Nitrato de Potasio": { K:1, NO3:1 },
-        "MAP": { NH4:1, H2PO4:1 },
-        "Sulfato de Magnesio": { Mg:1, SO4:1 },
-        "Sulfato de Potasio": { K:1, SO4:1 },
-        "Nitrato de Magnesio": { Mg:1, NO3:1 }
-    };
-
-    // ===== PRIORIDAD AGRONÓMICA =====
-    const prioridad = [
-        "Nitrato de Calcio",
-        "MAP",
-        "Nitrato de Potasio",
-        "Sulfato de Potasio",
-        "Sulfato de Magnesio",
-        "Nitrato de Magnesio"
-    ];
-
-    // ===== MOTOR =====
-    function calcularSistema({ requerimientos, fertilizantes, prioridad }) {
-
-        let req = { ...requerimientos };
-        let resultados = {};
-
-        for (let fert of prioridad) {
-
-            let comp = fertilizantes[fert];
-            if (!comp) continue;
-
-            // ===== 🔥 MAP CORREGIDO =====
-            if (fert === "MAP") {
-
-                let h2po4 = req.H2PO4 || 0;
-                let nh4 = req.NH4 || 0;
-
-                if (h2po4 > 0 || nh4 > 0) {
-
-                    let meq = 0;
-
-                    // balance perfecto
-                    if (h2po4 > 0 && nh4 > 0) {
-                        meq = Math.min(h2po4, nh4);
-                    }
-                    // solo P
-                    else if (h2po4 > 0) {
-                        meq = h2po4;
-                    }
-                    // solo NH4
-                    else {
-                        meq = nh4;
-                    }
-
-                    resultados[fert] = (resultados[fert] || 0) + meq;
-
-                    // consumir ambos
-                    req.H2PO4 = Math.max(0, h2po4 - meq);
-                    req.NH4 = Math.max(0, nh4 - meq);
-
-                    continue;
-                }
-            }
-
-            // ===== NORMAL =====
-            let nutrientes = Object.keys(comp).filter(n => req[n] > 0);
-
-            if (nutrientes.length === 0) continue;
-
-            let dosis = 0;
-
-            for (let n of nutrientes) {
-                let d = req[n] / comp[n];
-                if (d > dosis) dosis = d;
-            }
-
-            if (dosis <= 0) continue;
-
-            resultados[fert] = (resultados[fert] || 0) + dosis;
-
-            for (let n in comp) {
-                if (req[n] !== undefined) {
-                    req[n] = Math.max(0, req[n] - dosis * comp[n]);
-                }
-            }
-        }
-
-        return { resultados, faltantes: req };
+    if (vol <= 0) {
+        textoResultadoMEQ.innerText = "El volumen debe ser mayor a 0";
+        return;
     }
 
-    let { resultados, faltantes } = calcularSistema({
-        requerimientos,
-        fertilizantes,
-        prioridad
+    // ===== REQUERIMIENTOS =====
+    let caRestante = parseFloat(meq_ca.value) || 0;
+    let kRestante = parseFloat(meq_k.value) || 0;
+    let mgRestante = parseFloat(meq_mg.value) || 0;
+    let nh4Restante = parseFloat(meq_nh4.value) || 0;
+    let no3Restante = parseFloat(meq_no3.value) || 0;
+    let h2po4Restante = parseFloat(meq_h2po4.value) || 0;
+    let so4Restante = parseFloat(meq_so4.value) || 0;
+
+    // ===== SELECCIONADOS =====
+    const sel = {};
+    document.querySelectorAll('.fertilizante-meq:checked').forEach(cb => {
+        sel[cb.value] = true;
     });
+
+    const asignaciones = {};
+
+    // ===== PRIORIDAD 1: CALCIO =====
+    if (sel["Nitrato de Calcio"] && caRestante > 0) {
+        let meq = caRestante;
+        asignaciones["Nitrato de Calcio"] = meq;
+        no3Restante -= meq;
+        caRestante = 0;
+    }
+
+    // ===== PRIORIDAD 2: MAP =====
+    if (sel["Fosfato Monoamónico (MAP)"]) {
+
+        if (h2po4Restante > 0) {
+
+            let meq = h2po4Restante;
+            asignaciones["Fosfato Monoamónico (MAP) (por P)"] = meq;
+
+            h2po4Restante = 0;
+            nh4Restante -= meq;
+
+        } else if (nh4Restante > 0) {
+
+            let meq = nh4Restante;
+            asignaciones["Fosfato Monoamónico (MAP) (por NH4)"] = meq;
+
+            nh4Restante = 0;
+            h2po4Restante -= meq;
+        }
+    }
+
+    // ===== PRIORIDAD 3: K =====
+    if (kRestante > 0) {
+
+        if (sel["Nitrato de Potasio"]) {
+
+            let meq = kRestante;
+            asignaciones["Nitrato de Potasio"] = meq;
+
+            no3Restante -= meq;
+            kRestante = 0;
+
+        } else if (sel["Sulfato de Potasio"]) {
+
+            let meq = kRestante;
+            asignaciones["Sulfato de Potasio"] = meq;
+
+            so4Restante -= meq;
+            kRestante = 0;
+        }
+    }
+
+    // ===== PRIORIDAD 4: Mg =====
+    if (mgRestante > 0) {
+
+        if (sel["Sulfato de Magnesio"]) {
+
+            let meq = mgRestante;
+            asignaciones["Sulfato de Magnesio"] = meq;
+
+            so4Restante -= meq;
+            mgRestante = 0;
+
+        } else if (sel["Nitrato de Magnesio"]) {
+
+            let meq = mgRestante;
+            asignaciones["Nitrato de Magnesio"] = meq;
+
+            no3Restante -= meq;
+            mgRestante = 0;
+        }
+    }
+
+    // ===== PRIORIDAD 5: NO3 =====
+    if (no3Restante > 0) {
+
+        if (sel["Nitrato de Potasio"] && kRestante === 0 && !asignaciones["Nitrato de Potasio"]) {
+
+            asignaciones["Nitrato de Potasio (adicional)"] = no3Restante;
+            no3Restante = 0;
+
+        } else if (sel["Nitrato de Magnesio"] && mgRestante === 0 && !asignaciones["Nitrato de Magnesio"]) {
+
+            asignaciones["Nitrato de Magnesio (adicional)"] = no3Restante;
+            no3Restante = 0;
+
+        } else if (sel["Nitrato de Calcio"] && caRestante === 0 && !asignaciones["Nitrato de Calcio"]) {
+
+            asignaciones["Nitrato de Calcio (adicional)"] = no3Restante;
+            no3Restante = 0;
+        }
+    }
+
+    // ===== PRIORIDAD 6: SO4 =====
+    if (so4Restante > 0) {
+
+        if (sel["Sulfato de Magnesio"] && mgRestante === 0 && !asignaciones["Sulfato de Magnesio"]) {
+
+            asignaciones["Sulfato de Magnesio (adicional)"] = so4Restante;
+            so4Restante = 0;
+
+        } else if (sel["Sulfato de Potasio"] && kRestante === 0 && !asignaciones["Sulfato de Potasio"]) {
+
+            asignaciones["Sulfato de Potasio (adicional)"] = so4Restante;
+            so4Restante = 0;
+        }
+    }
 
     // ===== PESOS EQUIVALENTES =====
     const pesosEq = {
         "Nitrato de Calcio":118.08,
-        "Nitrato de Potasio":101.1,
-        "MAP":115.03,
+        "Nitrato de Potasio":101.10,
         "Sulfato de Magnesio":123.24,
+        "Fosfato Monoamónico (MAP)":115.03,
         "Sulfato de Potasio":87.13,
         "Nitrato de Magnesio":128.21
     };
 
+    // ===== CONVERSIÓN A GRAMOS =====
+    for (let nombre in asignaciones) {
+
+        let baseName = nombre.split(" (")[0].trim();
+        let peq = pesosEq[baseName];
+
+        if (!peq) continue;
+
+        let meq = asignaciones[nombre];
+        let gramos = (meq * peq / 1000) * vol;
+
+        resultados[nombre] = gramos.toFixed(2) + " g";
+    }
+
     // ===== OUTPUT =====
-    let out = "📊 RESULTADOS (gramos):\n\n";
+    let out = "";
 
-    for (let f in resultados) {
-        let g = resultados[f] * pesosEq[f] / 1000 * vol;
-        out += `${f}: ${g.toFixed(2)} g\n`;
+    for (let k in resultados) {
+        out += `${k}: ${resultados[k]}\n`;
     }
 
-    out += "\n⚠️ FALTANTES:\n";
+    out += "\n⚠️ NO CUBIERTOS:\n";
 
-    for (let i in faltantes) {
-        if (faltantes[i] > 0.01) {
-            out += `${i}: ${faltantes[i].toFixed(2)} meq/L\n`;
-        }
-    }
+    if (caRestante > 0.1) out += `Ca²⁺: ${caRestante.toFixed(2)}\n`;
+    if (kRestante > 0.1) out += `K⁺: ${kRestante.toFixed(2)}\n`;
+    if (mgRestante > 0.1) out += `Mg²⁺: ${mgRestante.toFixed(2)}\n`;
+    if (nh4Restante > 0.1) out += `NH₄⁺: ${nh4Restante.toFixed(2)}\n`;
+    if (no3Restante > 0.1) out += `NO₃⁻: ${no3Restante.toFixed(2)}\n`;
+    if (h2po4Restante > 0.1) out += `H₂PO₄⁻: ${h2po4Restante.toFixed(2)}\n`;
+    if (so4Restante > 0.1) out += `SO₄²⁻: ${so4Restante.toFixed(2)}\n`;
 
-    if (Object.keys(resultados).length === 0) {
-        out = "No se pudo calcular (revisá selección o datos)";
-    }
+    if (out === "") out = "No se pudo calcular";
 
     textoResultadoMEQ.innerText = out;
     resultadoMEQ.style.display = 'block';
