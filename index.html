@@ -158,9 +158,9 @@
 <div class="container">
     <div class="tabs">
         <button class="tab-btn active" data-tab="unidades">🌾 Unidades (kg/ha)</button>
-        <button class="tab-btn" data-tab="ppm">💧 PPM (mg/L)</button>
+        <button class="tab-btn" data-tab="ppm">💧 ppm (mg/L)</button>
         <button class="tab-btn" data-tab="ce">⚡ CE (dS/m)</button>
-        <button class="tab-btn" data-tab="meq">🧪 MEQ / L</button>
+        <button class="tab-btn" data-tab="meq">🧪 Meq / L</button>
         <button class="tab-btn" data-tab="micro">🌿 Microelementos</button>
         <button class="tab-btn" data-tab="ph">⚗️ Neutralización pH</button>
     </div>
@@ -374,84 +374,64 @@
             "Fosfato Monopotasico": { P2O5: 0.52, K2O: 0.34 },
             "Sulfato de amonio": { N: 0.21, SO4: 0.24 }
         };
-        
-        document.getElementById('btnCalcularUnidades').addEventListener('click', function() {
-            // Obtener requerimientos
-            let requerimientos = {
-                N: parseFloat(document.getElementById('un_n').value) || 0,
-                P2O5: parseFloat(document.getElementById('un_p').value) || 0,
-                K2O: parseFloat(document.getElementById('un_k').value) || 0,
-                Ca: parseFloat(document.getElementById('un_ca').value) || 0,
-                Mg: parseFloat(document.getElementById('un_mg').value) || 0,
-                SO4: parseFloat(document.getElementById('un_s').value) || 0
-            };
-            
-            // Filtrar requerimientos > 0
-            let reqs = {};
-            for (let key in requerimientos) {
-                if (requerimientos[key] > 0) reqs[key] = requerimientos[key];
-            }
-            
-            // Obtener fertilizantes seleccionados
-            let seleccionados = [];
-            document.querySelectorAll('.fertilizante-unidad:checked').forEach(cb => {
-                seleccionados.push(cb.value);
-            });
-            
-            let resultados = {};
-            let reqsActuales = Object.assign({}, reqs);
-            
-            // Función para calcular dosis (como en Android)
-            function aplicarFertilizante(fert, reqsActual) {
-                let conc = concentracionesUnidades[fert];
-                if (!conc) return null;
-                
-                let afectados = Object.keys(conc).filter(n => reqsActual[n] > 0);
-                if (afectados.length === 0) return null;
-                
-                let dosis = 0;
-                for (let n of afectados) {
-                    let req = reqsActual[n];
-                    let d = req / conc[n];
-                    if (d > dosis) dosis = d;
-                }
-                if (dosis === 0) return null;
-                
-                // Restar aportes
-                for (let n in conc) {
-                    if (reqsActual[n] !== undefined) {
-                        reqsActual[n] -= dosis * conc[n];
-                        if (reqsActual[n] <= 0.001) delete reqsActual[n];
-                    }
-                }
-                return dosis;
-            }
-            
-            // Aplicar cada fertilizante seleccionado
-            for (let fert of seleccionados) {
-                let dosis = aplicarFertilizante(fert, reqsActuales);
-                if (dosis !== null) {
-                    resultados[fert] = `${Math.round(dosis)} kg`;
-                }
-            }
-            
-            // Formatear salida
-            let output = "";
-            for (let [nombre, dosis] of Object.entries(resultados)) {
-                output += `${nombre}: ${dosis}\n`;
-            }
-            
-            if (Object.keys(reqsActuales).length > 0) {
-                output += "\n⚠️ Faltantes:\n";
-                for (let [n, v] of Object.entries(reqsActuales)) {
-                    output += `${n}: ${Math.round(v)} kg/ha\n`;
-                }
-            }
-            
-            if (output === "") output = "No se seleccionaron fertilizantes o no hay requerimientos.";
-            document.getElementById('textoResultadoUnidades').innerText = output;
-            document.getElementById('resultadoUnidades').style.display = 'block';
-        });
+        //----Meq-------
+      document.getElementById('btnCalcularMEQ').onclick = function () {
+
+    let vol = parseFloat(meq_vol.value) || 1000;
+
+    let requerimientos = {
+        Ca: parseFloat(meq_ca.value) || 0,
+        K: parseFloat(meq_k.value) || 0,
+        Mg: parseFloat(meq_mg.value) || 0,
+        NH4: parseFloat(meq_nh4.value) || 0,
+        NO3: parseFloat(meq_no3.value) || 0,
+        H2PO4: parseFloat(meq_h2po4.value) || 0,
+        SO4: parseFloat(meq_so4.value) || 0
+    };
+
+    const fertilizantes = {
+        "Nitrato de Calcio": { Ca:1, NO3:1 },
+        "Nitrato de Potasio": { K:1, NO3:1 },
+        "MAP": { NH4:1, H2PO4:1 },
+        "Sulfato de Magnesio": { Mg:1, SO4:1 }
+    };
+
+    const prioridad = [
+        "Nitrato de Calcio",
+        "MAP",
+        "Nitrato de Potasio",
+        "Sulfato de Magnesio"
+    ];
+
+    let { resultados, faltantes } = calcularSistema({
+        requerimientos,
+        fertilizantes,
+        prioridad
+    });
+
+    const pesosEq = {
+        "Nitrato de Calcio":118.08,
+        "Nitrato de Potasio":101.1,
+        "MAP":115.03,
+        "Sulfato de Magnesio":123.24
+    };
+
+    let out = "";
+
+    for (let f in resultados) {
+        let g = resultados[f] * pesosEq[f] / 1000 * vol;
+        out += `${f}: ${g.toFixed(2)} g\n`;
+    }
+
+    out += "\nFALTANTES:\n";
+    for (let i in faltantes) {
+        if (faltantes[i] > 0.01)
+            out += `${i}: ${faltantes[i].toFixed(2)} meq\n`;
+    }
+
+    textoResultadoMEQ.innerText = out;
+    resultadoMEQ.style.display = 'block';
+};
         
         // ----- 3. Lógica de PPM (para que no esté vacía) -----
        document.getElementById('btnCalcularPPM').addEventListener('click', function () {
