@@ -432,6 +432,36 @@
     textoResultadoMEQ.innerText = out;
     resultadoMEQ.style.display = 'block';
 };
+        // ===== PRIORIDAD 2: MAP (FIX REAL) =====
+if (seleccionados["Fosfato Monoamónico (MAP)"]) {
+
+    let meqMAP = 0;
+
+    if (h2po4Restante > 0 && nh4Restante > 0) {
+
+        meqMAP = Math.min(h2po4Restante, nh4Restante);
+        asignaciones["MAP (balanceado)"] = meqMAP;
+
+        h2po4Restante -= meqMAP;
+        nh4Restante -= meqMAP;
+
+    } else if (h2po4Restante > 0) {
+
+        meqMAP = h2po4Restante;
+        asignaciones["MAP (por P)"] = meqMAP;
+
+        h2po4Restante = 0;
+        nh4Restante = Math.max(0, nh4Restante - meqMAP);
+
+    } else if (nh4Restante > 0) {
+
+        meqMAP = nh4Restante;
+        asignaciones["MAP (por NH4)"] = meqMAP;
+
+        nh4Restante = 0;
+        h2po4Restante = Math.max(0, h2po4Restante - meqMAP);
+    }
+}
         
         // ----- 3. Lógica de PPM (para que no esté vacía) -----
        document.getElementById('btnCalcularPPM').addEventListener('click', function () {
