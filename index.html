@@ -268,7 +268,7 @@
             <div class="checkbox-group">
                 <label><input type="checkbox" class="fertilizante-meq" value="Nitrato de Calcio"> Nitrato de Calcio</label>
                 <label><input type="checkbox" class="fertilizante-meq" value="Nitrato de Potasio"> Nitrato de Potasio</label>
-                <label><input type="checkbox" class="fertilizante-meq" value="Fosfato Monoamónico (MAP)"> Fosfato Monoamónico (MAP)</label>
+                <label><input type="checkbox" class="fertilizante-meq" value="Fosfato Monoamónico"> Fosfato Monoamónico</label>
                 <label><input type="checkbox" class="fertilizante-meq" value="Sulfato de Magnesio"> Sulfato de Magnesio</label>
                 <label><input type="checkbox" class="fertilizante-meq" value="Sulfato de Potasio"> Sulfato de Potasio</label>
                 <label><input type="checkbox" class="fertilizante-meq" value="Nitrato de Magnesio"> Nitrato de Magnesio</label>
@@ -411,10 +411,10 @@
     }
 
 // ===== PRIORIDAD 2: MAP =====
-if (sel["Fosfato Monoamónico (MAP)"] && h2po4Restante > 0) {
+if (sel["Fosfato Monoamónico"] && h2po4Restante > 0) {
     // Aplicamos la misma lógica que el Nitrato de Calcio
     let meq = h2po4Restante; 
-    asignaciones["Fosfato Monoamónico (MAP)"] = meq;
+    asignaciones["Fosfato Monoamónico"] = meq;
 
     // Aquí está el truco: restamos a los dos
     h2po4Restante = 0; // El fósforo queda cubierto igual que hacés con el calcio
@@ -503,7 +503,7 @@ if (sel["Fosfato Monoamónico (MAP)"] && h2po4Restante > 0) {
         "Nitrato de Calcio":118.08,
         "Nitrato de Potasio":101.10,
         "Sulfato de Magnesio":123.24,
-        "Fosfato Monoamónico (MAP)":115.03,
+        "Fosfato Monoamónico":115.03,
         "Sulfato de Potasio":87.13,
         "Nitrato de Magnesio":128.21
     };
