@@ -182,7 +182,7 @@
             <div class="checkbox-group">
                 <label><input type="checkbox" class="fertilizante-unidad" value="Nitrato de Calcio"> Nitrato de Calcio</label>
                 <label><input type="checkbox" class="fertilizante-unidad" value="Nitrato de Potasio"> Nitrato de Potasio</label>
-                <label><input type="checkbox" class="fertilizante-unidad" value="Fosfato Monoamónico (MAP)"> Fosfato Monoamónico (MAP)</label>
+                <label><input type="checkbox" class="fertilizante-unidad" value="Fosfato Monoamónico"> Fosfato Monoamónico</label>
                 <label><input type="checkbox" class="fertilizante-unidad" value="Sulfato de Magnesio"> Sulfato de Magnesio</label>
                 <label><input type="checkbox" class="fertilizante-unidad" value="Sulfato de Potasio"> Sulfato de Potasio</label>
                 <label><input type="checkbox" class="fertilizante-unidad" value="Nitrato de Magnesio"> Nitrato de Magnesio</label>
@@ -218,7 +218,7 @@
             <div class="checkbox-group">
                 <label><input type="checkbox" class="fertilizante-ppm" value="Nitrato de Calcio"> Nitrato de Calcio</label>
                 <label><input type="checkbox" class="fertilizante-ppm" value="Nitrato de Potasio"> Nitrato de Potasio</label>
-                <label><input type="checkbox" class="fertilizante-ppm" value="Fosfato Monoamónico (MAP)"> Fosfato Monoamónico (MAP)</label>
+                <label><input type="checkbox" class="fertilizante-ppm" value="Fosfato Monoamónico"> Fosfato Monoamónico</label>
                 <label><input type="checkbox" class="fertilizante-ppm" value="Sulfato de Magnesio"> Sulfato de Magnesio</label>
                 <label><input type="checkbox" class="fertilizante-ppm" value="Sulfato de Potasio"> Sulfato de Potasio</label>
                 <label><input type="checkbox" class="fertilizante-ppm" value="Nitrato de Magnesio"> Nitrato de Magnesio</label>
@@ -366,7 +366,7 @@
         const concentracionesUnidades = {
             "Nitrato de Calcio": { N: 0.155, Ca: 0.265 },
             "Nitrato de Potasio": { N: 0.13, K2O: 0.46 },
-            "Fosfato Monoamónico (MAP)": { N: 0.11, P2O5: 0.52 },
+            "Fosfato Monoamónico": { N: 0.11, P2O5: 0.52 },
             "Sulfato de Magnesio": { Mg: 0.163, SO4: 0.129 },
             "Sulfato de Potasio": { K2O: 0.50, SO4: 0.18 },
             "Nitrato de Magnesio": { N: 0.11, Mg: 0.16 },
@@ -374,176 +374,6 @@
             "Fosfato Monopotasico": { P2O5: 0.52, K2O: 0.34 },
             "Sulfato de amonio": { N: 0.21, SO4: 0.24 }
         };
-        //----Meq-------
-    document.getElementById('btnCalcularMEQ').onclick = function () {
-
-    let resultados = {};
-    let vol = parseFloat(meq_vol.value) || 1000;
-
-    if (vol <= 0) {
-        textoResultadoMEQ.innerText = "El volumen debe ser mayor a 0";
-        return;
-    }
-
-    // ===== REQUERIMIENTOS =====
-    let caRestante = parseFloat(meq_ca.value) || 0;
-    let kRestante = parseFloat(meq_k.value) || 0;
-    let mgRestante = parseFloat(meq_mg.value) || 0;
-    let nh4Restante = parseFloat(meq_nh4.value) || 0;
-    let no3Restante = parseFloat(meq_no3.value) || 0;
-    let h2po4Restante = parseFloat(meq_h2po4.value) || 0;
-    let so4Restante = parseFloat(meq_so4.value) || 0;
-
-    // ===== SELECCIONADOS =====
-    const sel = {};
-    document.querySelectorAll('.fertilizante-meq:checked').forEach(cb => {
-        sel[cb.value] = true;
-    });
-
-    const asignaciones = {};
-
-    // ===== PRIORIDAD 1: CALCIO =====
-    if (sel["Nitrato de Calcio"] && caRestante > 0) {
-        let meq = caRestante;
-        asignaciones["Nitrato de Calcio"] = meq;
-        no3Restante -= meq;
-        caRestante = 0;
-    }
-
-// ===== PRIORIDAD 2: MAP =====
-if (sel["Fosfato Monoamónico"] && h2po4Restante > 0) {
-    // Aplicamos la misma lógica que el Nitrato de Calcio
-    let meq = h2po4Restante; 
-    asignaciones["Fosfato Monoamónico"] = meq;
-
-    // Aquí está el truco: restamos a los dos
-    h2po4Restante = 0; // El fósforo queda cubierto igual que hacés con el calcio
-    nh4Restante -= meq; // El amonio se descuenta de lo que traías
-} 
-        
-        // ===== PRIORIDAD 3: K =====
-    if (kRestante > 0) {
-
-        if (sel["Nitrato de Potasio"]) {
-
-            let meq = kRestante;
-            asignaciones["Nitrato de Potasio"] = meq;
-
-            no3Restante -= meq;
-            kRestante = 0;
-
-        } else if (sel["Sulfato de Potasio"]) {
-
-            let meq = kRestante;
-            asignaciones["Sulfato de Potasio"] = meq;
-
-            so4Restante -= meq;
-            kRestante = 0;
-        }
-    }
-
-    // ===== PRIORIDAD 4: Mg =====
-    if (mgRestante > 0) {
-
-        if (sel["Sulfato de Magnesio"]) {
-
-            let meq = mgRestante;
-            asignaciones["Sulfato de Magnesio"] = meq;
-
-            so4Restante -= meq;
-            mgRestante = 0;
-
-        } else if (sel["Nitrato de Magnesio"]) {
-
-            let meq = mgRestante;
-            asignaciones["Nitrato de Magnesio"] = meq;
-
-            no3Restante -= meq;
-            mgRestante = 0;
-        }
-    }
-
-    // ===== PRIORIDAD 5: NO3 =====
-    if (no3Restante > 0) {
-
-        if (sel["Nitrato de Potasio"] && kRestante === 0 && !asignaciones["Nitrato de Potasio"]) {
-
-            asignaciones["Nitrato de Potasio (adicional)"] = no3Restante;
-            no3Restante = 0;
-
-        } else if (sel["Nitrato de Magnesio"] && mgRestante === 0 && !asignaciones["Nitrato de Magnesio"]) {
-
-            asignaciones["Nitrato de Magnesio (adicional)"] = no3Restante;
-            no3Restante = 0;
-
-        } else if (sel["Nitrato de Calcio"] && caRestante === 0 && !asignaciones["Nitrato de Calcio"]) {
-
-            asignaciones["Nitrato de Calcio (adicional)"] = no3Restante;
-            no3Restante = 0;
-        }
-    }
-
-    // ===== PRIORIDAD 6: SO4 =====
-    if (so4Restante > 0) {
-
-        if (sel["Sulfato de Magnesio"] && mgRestante === 0 && !asignaciones["Sulfato de Magnesio"]) {
-
-            asignaciones["Sulfato de Magnesio (adicional)"] = so4Restante;
-            so4Restante = 0;
-
-        } else if (sel["Sulfato de Potasio"] && kRestante === 0 && !asignaciones["Sulfato de Potasio"]) {
-
-            asignaciones["Sulfato de Potasio (adicional)"] = so4Restante;
-            so4Restante = 0;
-        }
-    }
-
-    // ===== PESOS EQUIVALENTES =====
-    const pesosEq = {
-        "Nitrato de Calcio":118.08,
-        "Nitrato de Potasio":101.10,
-        "Sulfato de Magnesio":123.24,
-        "Fosfato Monoamónico":115.03,
-        "Sulfato de Potasio":87.13,
-        "Nitrato de Magnesio":128.21
-    };
-
-    // ===== CONVERSIÓN A GRAMOS =====
-    for (let nombre in asignaciones) {
-
-        let baseName = nombre.split(" (")[0].trim();
-        let peq = pesosEq[baseName];
-
-        if (!peq) continue;
-
-        let meq = asignaciones[nombre];
-        let gramos = (meq * peq / 1000) * vol;
-
-        resultados[nombre] = gramos.toFixed(2) + " g";
-    }
-
-    // ===== OUTPUT =====
-    let out = "";
-
-    for (let k in resultados) {
-        out += `${k}: ${resultados[k]}\n`;
-    }
-
-    out += "\n⚠️ NO CUBIERTOS:\n";
-
-    if (caRestante > 0.1) out += `Ca²⁺: ${caRestante.toFixed(2)}\n`;
-    if (kRestante > 0.1) out += `K⁺: ${kRestante.toFixed(2)}\n`;
-    if (mgRestante > 0.1) out += `Mg²⁺: ${mgRestante.toFixed(2)}\n`;
-    if (nh4Restante > 0.1) out += `NH₄⁺: ${nh4Restante.toFixed(2)}\n`;
-    if (no3Restante > 0.1) out += `NO₃⁻: ${no3Restante.toFixed(2)}\n`;
-    if (h2po4Restante > 0.1) out += `H₂PO₄⁻: ${h2po4Restante.toFixed(2)}\n`;
-    if (so4Restante > 0.1) out += `SO₄²⁻: ${so4Restante.toFixed(2)}\n`;
-
-    if (out === "") out = "No se pudo calcular";
-
-    textoResultadoMEQ.innerText = out;
-    resultadoMEQ.style.display = 'block';
-};
         
         // ----- 3. Lógica de PPM (para que no esté vacía) -----
        document.getElementById('btnCalcularPPM').addEventListener('click', function () {
@@ -672,14 +502,14 @@ if (sel["Fosfato Monoamónico"] && h2po4Restante > 0) {
     }
 
     // ===== 4. MAP =====
-    if (sel["Fosfato Monoamónico (MAP)"] && (pRestante > 0 || nh4Restante > 0)) {
+    if (sel["Fosfato Monoamónico"] && (pRestante > 0 || nh4Restante > 0)) {
 
         let cP = pRestante > 0 ? pRestante / 0.52 : Infinity;
         let cNH4 = nh4Restante > 0 ? nh4Restante / 0.12 : Infinity;
 
         let cantidad = Math.min(cP, cNH4);
 
-        resultados["MAP"] = f(gTotal(cantidad));
+        resultados["Fosfato Monoamónico"] = f(gTotal(cantidad));
 
         let nh4A = cantidad * 0.12;
         let pA = cantidad * 0.52;
@@ -875,21 +705,17 @@ if (sel["Fosfato Monoamónico"] && h2po4Restante > 0) {
     }
 
     // ===== PRIORIDAD 2: MAP =====
-    if (seleccionados["Fosfato Monoamónico (MAP)"]) {
-        if (h2po4Restante > 0) {
-            let meq = h2po4Restante;
-            asignaciones["MAP (por P)"] = meq;
-            h2po4Restante = 0;
-            nh4Restante -= meq;
-        } else if (nh4Restante > 0) {
-            let meq = nh4Restante;
-            asignaciones["MAP (por NH4)"] = meq;
-            nh4Restante = 0;
-            h2po4Restante -= meq;
-        }
-    }
+    if (sel["Fosfato Monoamónico (MAP)"] && h2po4Restante > 0) {
+    // Aplicamos la misma lógica que el Nitrato de Calcio
+    let meq = h2po4Restante; 
+    asignaciones["Fosfato Monoamónico (MAP)"] = meq;
 
-    // ===== PRIORIDAD 3: K =====
+    // Aquí está el truco: restamos a los dos
+    h2po4Restante = 0; // El fósforo queda cubierto igual que hacés con el calcio
+    nh4Restante -= meq; // El amonio se descuenta de lo que traías
+}
+
+         // ===== PRIORIDAD 3: K =====
     if (kRestante > 0) {
         if (seleccionados["Nitrato de Potasio"]) {
             let meq = kRestante;
