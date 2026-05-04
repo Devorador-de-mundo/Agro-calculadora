@@ -411,26 +411,25 @@
     }
 
     // ===== PRIORIDAD 2: MAP =====
-    if (sel["Fosfato Monoamónico (MAP)"]) {
+if (sel["Fosfato Monoamónico (MAP)"]) {
 
-        if (h2po4Restante > 0) {
+    if (h2po4Restante > 0) {
+        let meq = h2po4Restante;
+        // Guardamos con el nombre base para que el conversor a gramos lo encuentre
+        asignaciones["Fosfato Monoamónico (MAP)"] = meq; 
 
-            let meq = h2po4Restante;
-            asignaciones["Fosfato Monoamónico (MAP) (por P)"] = meq;
+        h2po4Restante = 0;
+        nh4Restante -= meq; // Restamos el amonio que ya metimos
 
-            h2po4Restante = 0;
-            nh4Restante -= meq;
+    } else if (nh4Restante > 0) {
+        let meq = nh4Restante;
+        // Guardamos con el nombre base
+        asignaciones["Fosfato Monoamónico (MAP)"] = meq;
 
-        } else if (nh4Restante > 0) {
-
-            let meq = nh4Restante;
-            asignaciones["Fosfato Monoamónico (MAP) (por NH4)"] = meq;
-
-            nh4Restante = 0;
-            h2po4Restante -= meq;
-        }
+        nh4Restante = 0;
+        h2po4Restante -= meq; // Restamos el fósforo que ya metimos
     }
-
+}
     // ===== PRIORIDAD 3: K =====
     if (kRestante > 0) {
 
