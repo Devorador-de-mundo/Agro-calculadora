@@ -705,10 +705,10 @@
     }
 
     // ===== PRIORIDAD 2: MAP =====
-    if (sel["Fosfato Monoamónico (MAP)"] && h2po4Restante > 0) {
+    if (sel["Fosfato Monoamónico"] && h2po4Restante > 0) {
     // Aplicamos la misma lógica que el Nitrato de Calcio
     let meq = h2po4Restante; 
-    asignaciones["Fosfato Monoamónico (MAP)"] = meq;
+    asignaciones["Fosfato Monoamónico"] = meq;
 
     // Aquí está el truco: restamos a los dos
     h2po4Restante = 0; // El fósforo queda cubierto igual que hacés con el calcio
