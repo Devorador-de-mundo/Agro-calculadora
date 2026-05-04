@@ -411,23 +411,24 @@
     }
 
 // ===== PRIORIDAD 2: MAP =====
-if (fertilizantesSeleccionados["Fosfato Monoamónico (MAP)"] == true) {
-    var meqMAP = 0.0
-    if (h2po4Restante > 0) {
-        meqMAP = h2po4Restante
-        // QUITALE el "(por P)", dejalo seco para que pegue con el diccionario de pesos
-        asignaciones["Fosfato Monoamónico (MAP)"] = meqMAP
-        h2po4Restante = 0.0
-        nh4Restante -= meqMAP // Esto descuenta la "deuda" para los SIGUIENTES fertilizantes
-    } else if (nh4Restante > 0) {
-        meqMAP = nh4Restante
-        // QUITALE el "(por NH4)"
-        asignaciones["Fosfato Monoamónico (MAP)"] = meqMAP
-        nh4Restante = 0.0
-        h2po4Restante -= meqMAP
+// Prioridad 2: MAP (Aporta NH4 y H2PO4 en relación 1:1)
+if (sel["Fosfato Monoamónico (MAP)"]) {
+    // Calculamos cuánto MAP se necesita según el menor de los dos requerimientos
+    let meqMAP = Math.min(nh4Restante, h2po4Restante);
+    
+    // Si quieres que el Fósforo mande siempre (aunque te pases de NH4), usa:
+    // let meqMAP = h2po4Restante; 
+
+    if (meqMAP > 0) {
+        // Asignamos la cantidad al objeto de resultados
+        resultadosMEQ["Fosfato Monoamónico (MAP)"] = meqMAP;
+        
+        // Restamos de ambos nutrientes para que los siguientes fertilizantes no dupliquen
+        nh4Restante -= meqMAP;
+        h2po4Restante -= meqMAP;
     }
-}
-    // ===== PRIORIDAD 3: K =====
+}    
+        // ===== PRIORIDAD 3: K =====
     if (kRestante > 0) {
 
         if (sel["Nitrato de Potasio"]) {
