@@ -359,11 +359,102 @@
         });
         
         // ==================== UNIDADES (kg/ha) ====================
-        document.getElementById('btnCalcularUnidades').addEventListener('click', function() {
-            const vol = parseFloat(document.getElementById('un_n').value) || 0;
-            document.getElementById('textoResultadoUnidades').innerText = "Función en desarrollo - Próximamente";
-            document.getElementById('resultadoUnidades').style.display = 'block';
-        });
+    document.getElementById('btnCalcularUnidades').addEventListener('click', function() {
+    // Obtener requerimientos del usuario (en kg de nutriente)
+    let reqN = parseFloat(document.getElementById('un_n').value) || 0;
+    let reqP = parseFloat(document.getElementById('un_p').value) || 0;
+    let reqK = parseFloat(document.getElementById('un_k').value) || 0;
+    let reqCa = parseFloat(document.getElementById('un_ca').value) || 0;
+    let reqMg = parseFloat(document.getElementById('un_mg').value) || 0;
+    let reqSO4 = parseFloat(document.getElementById('un_s').value) || 0;
+
+    // Mapa de requerimientos
+    let requerimientos = {};
+    if (reqN > 0) requerimientos["N"] = reqN;
+    if (reqP > 0) requerimientos["P2O5"] = reqP;
+    if (reqK > 0) requerimientos["K2O"] = reqK;
+    if (reqCa > 0) requerimientos["Ca"] = reqCa;
+    if (reqMg > 0) requerimientos["Mg"] = reqMg;
+    if (reqSO4 > 0) requerimientos["SO4"] = reqSO4;
+
+    // Fertilizantes con sus concentraciones
+    const fertilizantesData = {
+        "Nitrato de Calcio": { N: 0.155, Ca: 0.265 },
+        "Nitrato de Potasio": { N: 0.13, K2O: 0.46 },
+        "Fosfato Monoamónico (MAP)": { N: 0.11, P2O5: 0.52 },
+        "Sulfato de Magnesio": { Mg: 0.163, SO4: 0.129 },
+        "Sulfato de Potasio": { K2O: 0.50, SO4: 0.18 },
+        "Nitrato de Magnesio": { N: 0.11, Mg: 0.16 },
+        "Urea": { N: 0.46 },
+        "Fosfato Monopotasico": { P2O5: 0.52, K2O: 0.34 }
+    };
+
+    // Obtener fertilizantes seleccionados por el usuario
+    let fertilizantesSeleccionados = [];
+    document.querySelectorAll('.fert-unidad:checked').forEach(cb => {
+        fertilizantesSeleccionados.push(cb.value);
+    });
+
+    // Función para calcular dosis
+    function calcularDosis(fert, reqs) {
+        let conc = fertilizantesData[fert];
+        if (!conc) return { dosis: 0, nuevosReqs: reqs };
+
+        let nutrientesAfectados = Object.keys(conc).filter(n => reqs[n] > 0);
+        if (nutrientesAfectados.length === 0) return { dosis: 0, nuevosReqs: reqs };
+
+        let dosisMax = 0;
+        for (let n of nutrientesAfectados) {
+            let dosis = reqs[n] / conc[n];
+            if (dosis > dosisMax) dosisMax = dosis;
+        }
+
+        if (dosisMax === 0) return { dosis: 0, nuevosReqs: reqs };
+
+        let nuevosReqs = { ...reqs };
+        for (let [n, c] of Object.entries(conc)) {
+            let aporte = dosisMax * c;
+            if (nuevosReqs[n] !== undefined) {
+                let nuevo = nuevosReqs[n] - aporte;
+                if (nuevo <= 0.001) delete nuevosReqs[n];
+                else nuevosReqs[n] = nuevo;
+            }
+        }
+        return { dosis: dosisMax, nuevosReqs: nuevosReqs };
+    }
+
+    // Aplicar fertilizantes seleccionados
+    let reqsActuales = { ...requerimientos };
+    let resultados = {};
+
+    for (let fert of fertilizantesSeleccionados) {
+        let { dosis, nuevosReqs } = calcularDosis(fert, reqsActuales);
+        if (dosis > 0) {
+            resultados[fert] = `${Math.round(dosis)} kg`;
+            reqsActuales = nuevosReqs;
+        }
+    }
+
+    // Mostrar resultados
+    let output = "";
+    for (let [nombre, dosis] of Object.entries(resultados)) {
+        output += `${nombre}: ${dosis}\n`;
+    }
+
+    if (Object.keys(reqsActuales).length > 0) {
+        output += "\n⚠️ Faltantes:\n";
+        for (let [n, v] of Object.entries(reqsActuales)) {
+            output += `${n}: ${Math.round(v)} kg/ha\n`;
+        }
+    }
+
+    if (output === "") {
+        output = "Seleccioná fertilizantes e ingresá valores.";
+    }
+
+    document.getElementById('textoResultadoUnidades').innerText = output;
+    document.getElementById('resultadoUnidades').style.display = 'block';
+});
         
         // ==================== PPM (mg/L) CORREGIDO ====================
         document.getElementById('btnCalcularPPM').addEventListener('click', function() {
