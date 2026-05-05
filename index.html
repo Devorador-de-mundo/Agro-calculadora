@@ -166,38 +166,36 @@
     </div>
 
     <!-- ==================== UNIDADES (kg/ha) ==================== -->
-    <div id="unidades" class="tab-content active">
-        <h2>📏 Cálculo en Unidades (kg/ha)</h2>
-        <div class="form-grid">
-            <div class="input-group"><label>Nitrógeno (N) kg/ha</label><input type="number" id="un_n" placeholder="150"></div>
-            <div class="input-group"><label>Fósforo (P₂O₅) kg/ha</label><input type="number" id="un_p" placeholder="80"></div>
-            <div class="input-group"><label>Potasio (K₂O) kg/ha</label><input type="number" id="un_k" placeholder="120"></div>
-            <div class="input-group"><label>Calcio (Ca) kg/ha</label><input type="number" id="un_ca" placeholder="0"></div>
-            <div class="input-group"><label>Magnesio (Mg) kg/ha</label><input type="number" id="un_mg" placeholder="0"></div>
-            <div class="input-group"><label>Azufre (S) kg/ha</label><input type="number" id="un_s" placeholder="0"></div>
-        </div>
-        
-        <div class="fertilizantes-lista">
-            <h3>🌱 Fertilizantes disponibles (seleccioná los que tenés):</h3>
-            <div class="checkbox-group">
-                <label><input type="checkbox" class="fertilizante-unidad" value="Nitrato de Calcio"> Nitrato de Calcio</label>
-                <label><input type="checkbox" class="fertilizante-unidad" value="Nitrato de Potasio"> Nitrato de Potasio</label>
-                <label><input type="checkbox" class="fertilizante-unidad" value="Fosfato Monoamónico"> Fosfato Monoamónico</label>
-                <label><input type="checkbox" class="fertilizante-unidad" value="Sulfato de Magnesio"> Sulfato de Magnesio</label>
-                <label><input type="checkbox" class="fertilizante-unidad" value="Sulfato de Potasio"> Sulfato de Potasio</label>
-                <label><input type="checkbox" class="fertilizante-unidad" value="Nitrato de Magnesio"> Nitrato de Magnesio</label>
-                <label><input type="checkbox" class="fertilizante-unidad" value="Urea"> Urea</label>
-                <label><input type="checkbox" class="fertilizante-unidad" value="Fosfato Monopotasico"> Fosfato Monopotasico</label>
-                <label><input type="checkbox" class="fertilizante-unidad" value="Sulfato de amonio"> Sulfato de Amonio</label>
-            </div>
-        </div>
-        
-        <button id="btnCalcularUnidades">Calcular dosis</button>
-        <div id="resultadoUnidades" class="result-card" style="display: none;">
-            <div class="result-title">📊 Resultados (kg/ha):</div>
-            <pre id="textoResultadoUnidades"></pre>
+    <!-- UNIDADES -->
+<div id="unidades" class="tab-content active">
+    <h2>Unidades (kg/ha)</h2>
+    <div class="form-grid">
+        <div><label>Nitrógeno (N) kg/ha</label><input type="number" id="un_n" placeholder="150"></div>
+        <div><label>Fósforo (P₂O₅) kg/ha</label><input type="number" id="un_p" placeholder="80"></div>
+        <div><label>Potasio (K₂O) kg/ha</label><input type="number" id="un_k" placeholder="120"></div>
+        <div><label>Calcio (Ca) kg/ha</label><input type="number" id="un_ca" placeholder="0"></div>
+        <div><label>Magnesio (Mg) kg/ha</label><input type="number" id="un_mg" placeholder="0"></div>
+        <div><label>Azufre (SO₄) kg/ha</label><input type="number" id="un_s" placeholder="0"></div>
+    </div>
+    <div class="fertilizantes-lista">
+        <h3>🌱 Fertilizantes disponibles:</h3>
+        <div class="checkbox-group">
+            <label><input type="checkbox" class="fert-unidad" value="Nitrato de Calcio"> Nitrato de Calcio</label>
+            <label><input type="checkbox" class="fert-unidad" value="Nitrato de Potasio"> Nitrato de Potasio</label>
+            <label><input type="checkbox" class="fert-unidad" value="Fosfato Monoamónico (MAP)" checked> MAP</label>
+            <label><input type="checkbox" class="fert-unidad" value="Sulfato de Magnesio"> Sulfato de Magnesio</label>
+            <label><input type="checkbox" class="fert-unidad" value="Sulfato de Potasio"> Sulfato de Potasio</label>
+            <label><input type="checkbox" class="fert-unidad" value="Nitrato de Magnesio"> Nitrato de Magnesio</label>
+            <label><input type="checkbox" class="fert-unidad" value="Urea"> Urea</label>
+            <label><input type="checkbox" class="fert-unidad" value="Fosfato Monopotasico"> Fosfato Monopotasico</label>
         </div>
     </div>
+    <button id="btnCalcularUnidades">Calcular dosis</button>
+    <div id="resultadoUnidades" class="result-card" style="display:none;">
+        <div class="result-title">Resultados</div>
+        <pre id="textoResultadoUnidades"></pre>
+    </div>
+</div>
 
     <!-- ==================== PPM (mg/L) ==================== -->
     <div id="ppm" class="tab-content">
