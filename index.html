@@ -333,52 +333,159 @@
         </div>
     </div>
 
+    
     <!-- PESTAÑA AYUDA -->
 <div id="Cómo usar la app" class="tab-content">
-    <h2>❓ Cómo usar la app - AgroCalculadora</h2>
+    <h2> Cómo usar la app❓ - AgroCalculadora</h2>
     
+    <!-- Introducción -->
     <div style="background: #f9f9f9; padding: 20px; border-radius: 20px; margin-bottom: 24px;">
-        <h3>📖 ¿Cómo usar la calculadora?</h3>
-        <p>Esta aplicación te ayuda a calcular dosis de fertilizantes para diferentes métodos de cálculo.</p>
-    </div>
-
-    <div style="background: #f9f9f9; padding: 20px; border-radius: 20px; margin-bottom: 24px;">
-        <h3>🌾 Unidades (kg/ha)</h3>
-        <p>Calcula fertilizantes sólidos en kilogramos por hectárea. Ingresá los kg/ha de nutrientes, seleccioná los fertilizantes y presioná calcular.</p>
-    </div>
-
-    <div style="background: #f9f9f9; padding: 20px; border-radius: 20px; margin-bottom: 24px;">
-        <h3>💧 PPM (mg/L)</h3>
-        <p>Calcula fertilizantes para soluciones hidropónicas. Ingresá el volumen y los ppm deseados de Ca, K y Mg.</p>
-    </div>
-
-    <div style="background: #f9f9f9; padding: 20px; border-radius: 20px; margin-bottom: 24px;">
-        <h3>⚡ CE (dS/m)</h3>
-        <p>Calcula fertilizantes según la conductividad eléctrica deseada. Seleccioná la CE objetivo y el volumen.</p>
-    </div>
-
-    <div style="background: #f9f9f9; padding: 20px; border-radius: 20px; margin-bottom: 24px;">
-        <h3>🧪 MEQ/L</h3>
-        <p>Método preciso para balancear soluciones hidropónicas. Ingresá volumen, meq/L de iones y seleccioná fertilizantes.</p>
-    </div>
-
-    <div style="background: #f9f9f9; padding: 20px; border-radius: 20px; margin-bottom: 24px;">
-        <h3>🌿 Microelementos</h3>
-        <p>Calcula dosis de micronutrientes. Ingresá volumen, mg/L de Fe y % del quelato.</p>
-    </div>
-
-    <div style="background: #f9f9f9; padding: 20px; border-radius: 20px; margin-bottom: 24px;">
-        <h3>⚗️ Neutralización de pH</h3>
-        <p>Calcula ácido para neutralizar bicarbonatos del agua. Se deja un remanente de 0.5 meq/L de bicarbonatos.</p>
-    </div>
-
-    <div style="background: #e8f5e9; padding: 20px; border-radius: 20px;">
-        <h3>⚠️ Consejos de seguridad</h3>
+        <h3>📖 ¿Qué es AgroCalculadora?</h3>
+        <p>AgroCalculadora es una herramienta profesional para el cálculo de dosis de fertilizantes en diferentes sistemas de producción: agricultura convencional, hidroponía y fertirriego.</p>
+        <p>La aplicación te permite calcular dosis en:</p>
         <ul>
-            <li>Siempre agregá el ácido SOBRE el agua, nunca al revés</li>
-            <li>Usá guantes y gafas de seguridad</li>
-            <li>Verificá los cálculos con un especialista</li>
+            <li><strong>Unidades (kg/ha)</strong> - Para campo abierto y cultivos extensivos</li>
+            <li><strong>PPM (mg/L)</strong> - Para soluciones hidropónicas y fertirriego</li>
+            <li><strong>CE (dS/m)</strong> - Basado en conductividad eléctrica</li>
+            <li><strong>MEQ/L</strong> - Balance de miliequivalentes para soluciones precisas</li>
+            <li><strong>Microelementos</strong> - Dosis de micronutrientes</li>
+            <li><strong>Neutralización pH</strong> - Ajuste de bicarbonatos en el agua</li>
         </ul>
+    </div>
+
+    <!-- UNIDADES -->
+    <div style="background: #f9f9f9; padding: 20px; border-radius: 20px; margin-bottom: 24px;">
+        <h3>🌾 Método 1: Unidades (kg/ha)</h3>
+        <p><strong>📌 ¿Para qué sirve?</strong> Este método es ideal para agricultura convencional en campo abierto. Calcula la cantidad de fertilizante en kilogramos por hectárea.</p>
+        <p><strong>⚙️ ¿Cómo usarlo?</strong></p>
+        <ol>
+            <li>Ingresá los kg/ha de nutrientes que necesita tu cultivo (N, P₂O₅, K₂O, Ca, Mg, S)</li>
+            <li>Seleccioná los fertilizantes que tenés disponibles (marcando los checkboxes)</li>
+            <li>Presioná el botón <strong>"Calcular dosis"</strong></li>
+            <li>La app te mostrará cuántos kg de cada fertilizante aplicar por hectárea</li>
+        </ol>
+        <p><strong>💡 Ejemplo:</strong> Si necesitas 100 kg/ha de Nitrógeno y seleccionás Urea (46% N), necesitarás 100 ÷ 0.46 = 217 kg/ha de Urea.</p>
+    </div>
+
+    <!-- PPM -->
+    <div style="background: #f9f9f9; padding: 20px; border-radius: 20px; margin-bottom: 24px;">
+        <h3>💧 Método 2: PPM (mg/L)</h3>
+        <p><strong>📌 ¿Para qué sirve?</strong> Este método es ideal para hidroponía y fertirriego. Calcula la cantidad de fertilizante en gramos para un volumen de agua específico.</p>
+        <p><strong>⚙️ ¿Cómo usarlo?</strong></p>
+        <ol>
+            <li>Ingresá el volumen de agua en litros</li>
+            <li>Ingresá los ppm deseados de Ca²⁺, K⁺ y Mg²⁺</li>
+            <li>Seleccioná los fertilizantes disponibles</li>
+            <li>Presioná <strong>"Calcular dosis"</strong></li>
+            <li>La app te mostrará los gramos de cada fertilizante para agregar al tanque</li>
+        </ol>
+        <p><strong>💡 Ejemplo:</strong> Para 1000 L de agua con 180 ppm de Ca, necesitarás (180 ÷ 0.265) × (1000 ÷ 1000) = 679 g de Nitrato de Calcio.</p>
+    </div>
+
+    <!-- CE -->
+    <div style="background: #f9f9f9; padding: 20px; border-radius: 20px; margin-bottom: 24px;">
+        <h3>⚡ Método 3: Conductividad Eléctrica (dS/m)</h3>
+        <p><strong>📌 ¿Para qué sirve?</strong> Calcula la cantidad de fertilizantes necesarios para alcanzar una conductividad eléctrica específica en la solución.</p>
+        <p><strong>⚙️ ¿Cómo usarlo?</strong></p>
+        <ol>
+            <li>Seleccioná la CE objetivo (0.5 a 3.0 dS/m)</li>
+            <li>Ingresá el volumen en litros</li>
+            <li>Presioná <strong>"Calcular mezcla"</strong></li>
+            <li>La app te mostrará los gramos de cada fertilizante (KNO₃, Nitrato de Calcio, MgSO₄, MAP, K₂SO₄)</li>
+        </ol>
+        <p><strong>💡 Nota:</strong> Las tablas están basadas en valores estándar para soluciones nutritivas equilibradas.</p>
+    </div>
+
+    <!-- MEQ -->
+    <div style="background: #f9f9f9; padding: 20px; border-radius: 20px; margin-bottom: 24px;">
+        <h3>🧪 Método 4: Miliequivalentes por litro (MEQ/L)</h3>
+        <p><strong>📌 ¿Para qué sirve?</strong> Es el método más preciso para balancear soluciones hidropónicas profesionales. Trabaja con miliequivalentes de cada ión.</p>
+        <p><strong>⚙️ ¿Cómo usarlo?</strong></p>
+        <ol>
+            <li>Ingresá el volumen en litros</li>
+            <li>Ingresá los meq/L de cada ión: Ca²⁺, K⁺, Mg²⁺, NH₄⁺, NO₃⁻, H₂PO₄⁻, SO₄²⁻</li>
+            <li>Seleccioná los fertilizantes que tenés disponibles</li>
+            <li>Presioná <strong>"Calcular dosis"</strong></li>
+            <li>La app te mostrará los gramos de cada fertilizante</li>
+        </ol>
+        <p><strong>💡 Regla de balance:</strong> La suma de cationes (Ca²⁺ + K⁺ + Mg²⁺ + NH₄⁺) debe ser igual a la suma de aniones (NO₃⁻ + H₂PO₄⁻ + SO₄²⁻). La app no verifica esto, cuidá el balance.</p>
+    </div>
+
+    <!-- MICRO -->
+    <div style="background: #f9f9f9; padding: 20px; border-radius: 20px; margin-bottom: 24px;">
+        <h3>🌿 Método 5: Microelementos (mg/L)</h3>
+        <p><strong>📌 ¿Para qué sirve?</strong> Calcula las dosis de micronutrientes necesarios para una solución nutritiva completa.</p>
+        <p><strong>⚙️ ¿Cómo usarlo?</strong></p>
+        <ol>
+            <li>Ingresá el volumen en litros</li>
+            <li>Ingresá los mg/L deseados de Fe (hierro)</li>
+            <li>Ingresá el porcentaje de Fe de tu quelato</li>
+            <li>Seleccioná los fertilizantes disponibles</li>
+            <li>Presioná <strong>"Calcular dosis"</strong></li>
+        </ol>
+        <p><strong>💡 Valores de referencia (mg/L):</strong></p>
+        <ul>
+            <li>Hierro (Fe): 2.5 - 5.0 mg/L</li>
+            <li>Manganeso (Mn): 0.5 - 1.0 mg/L</li>
+            <li>Zinc (Zn): 0.3 - 0.5 mg/L</li>
+            <li>Cobre (Cu): 0.1 - 0.2 mg/L</li>
+            <li>Boro (B): 0.3 - 0.5 mg/L</li>
+            <li>Molibdeno (Mo): 0.05 - 0.1 mg/L</li>
+        </ul>
+    </div>
+
+    <!-- pH -->
+    <div style="background: #f9f9f9; padding: 20px; border-radius: 20px; margin-bottom: 24px;">
+        <h3>⚗️ Método 6: Neutralización de pH</h3>
+        <p><strong>📌 ¿Para qué sirve?</strong> Calcula la cantidad de ácido necesaria para neutralizar los bicarbonatos del agua y ajustar el pH.</p>
+        <p><strong>⚙️ ¿Cómo usarlo?</strong></p>
+        <ol>
+            <li>Ingresá el volumen de agua en litros</li>
+            <li>Ingresá los bicarbonatos del agua en meq/L (valor del análisis de agua)</li>
+            <li>Seleccioná el tipo de ácido (Nítrico, Fosfórico o Sulfúrico)</li>
+            <li>Ingresá la densidad (g/mL) y pureza (%) del ácido comercial</li>
+            <li>Presioná <strong>"Calcular ácido"</strong></li>
+        </ol>
+        <p><strong>📐 Regla fundamental:</strong> Se debe dejar un remanente de 0.5 meq/L de bicarbonatos para estabilidad del pH.</p>
+        <p><strong>💡 Ejemplo:</strong> Agua con 3.5 meq/L de bicarbonatos, volumen 1000 L. Se neutralizan 3.0 meq/L × 1000 L = 3000 meq. Con ácido nítrico al 68% y densidad 1.41, necesitarás aproximadamente 200 mL.</p>
+    </div>
+
+    <!-- Tabla de valores de referencia -->
+    <div style="background: #f9f9f9; padding: 20px; border-radius: 20px; margin-bottom: 24px;">
+        <h3>📊 Tabla de valores de referencia para hidroponía</h3>
+        <p><strong>Nutrientes principales (meq/L):</strong></p>
+        <ul>
+            <li>Ca²⁺: 3.0 - 5.0 meq/L</li>
+            <li>K⁺: 3.0 - 6.0 meq/L</li>
+            <li>Mg²⁺: 1.0 - 2.0 meq/L</li>
+            <li>NH₄⁺: 0 - 1.0 meq/L</li>
+            <li>NO₃⁻: 8.0 - 12.0 meq/L</li>
+            <li>H₂PO₄⁻: 1.0 - 1.5 meq/L</li>
+            <li>SO₄²⁻: 1.0 - 2.0 meq/L</li>
+        </ul>
+        <p><strong>Rango de pH óptimo:</strong> 5.5 - 6.5</p>
+        <p><strong>Rango de CE óptimo:</strong> 1.2 - 2.5 dS/m (según cultivo y etapa)</p>
+    </div>
+
+    <!-- Consejos de seguridad -->
+    <div style="background: #e8f5e9; padding: 20px; border-radius: 20px; margin-bottom: 24px;">
+        <h3>⚠️ Consejos de seguridad IMPORTANTES</h3>
+        <ul>
+            <li><strong>Siempre</strong> agregá el ácido SOBRE el agua, NUNCA al revés (puede causar salpicaduras violentas)</li>
+            <li>Usá guantes de nitrilo y gafas de seguridad al manipular ácidos concentrados</li>
+            <li>Trabajá en un área bien ventilada cuando uses ácido nítrico (libera vapores tóxicos)</li>
+            <li>Almacená los ácidos en lugares frescos, secos y fuera del alcance de niños y animales</li>
+            <li>No mezcles ácidos sin conocimiento específico (pueden generar reacciones peligrosas)</li>
+            <li>Verificá los cálculos con un especialista en nutrición vegetal</li>
+            <li>Calibrá tu medidor de pH antes de cada uso para resultados precisos</li>
+        </ul>
+    </div>
+
+    <!-- Contacto -->
+    <div style="background: #e3f2fd; padding: 20px; border-radius: 20px;">
+        <h3>📞 ¿Necesitas ayuda?</h3>
+        <p>Si tenés dudas sobre el uso de esta aplicación o sobre nutrición vegetal, consultá con un ingeniero agrónomo o especialista en fertirriego.</p>
+        <p><strong>Versión:</strong> 1.0 | AgroCalculadora - Herramienta profesional para el campo</p>
     </div>
 </div>
 </div>
